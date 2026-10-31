@@ -1,0 +1,54 @@
+{
+  "engine": "flowable-community-dmn",
+  "version": "7.2.0",
+  "source": "https://github.com/flowable/flowable-engine/tree/flowable-7.2.0/modules/flowable-dmn-model",
+  "generatedBy": "scripts/extract-flowable-dmn-schema.mjs",
+  "decisionTable": {
+    "attributes": {
+      "hitPolicy": {
+        "type": "enum",
+        "values": [
+          "UNIQUE",
+          "FIRST",
+          "PRIORITY",
+          "ANY",
+          "UNORDERED",
+          "RULE ORDER",
+          "OUTPUT ORDER",
+          "COLLECT"
+        ]
+      },
+      "aggregation": {
+        "type": "enum",
+        "values": [
+          "SUM",
+          "COUNT",
+          "MIN",
+          "MAX"
+        ],
+        "onlyWhen": {
+          "hitPolicy": "COLLECT"
+        }
+      }
+    },
+    "elements": {
+      "decisionTable": "decisionTable",
+      "input": "input",
+      "inputExpression": "inputExpression",
+      "inputValues": "inputValues",
+      "output": "output",
+      "outputValues": "outputValues",
+      "rule": "rule",
+      "inputEntry": "inputEntry",
+      "outputEntry": "outputEntry",
+      "description": "description",
+      "text": "text"
+    },
+    "clauseAttributes": [
+      "id",
+      "label",
+      "name",
+      "typeRef"
+    ]
+  }
+}

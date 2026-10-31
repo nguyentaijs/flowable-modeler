@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.1" design:palette="flowable-work-process-palette">
+  <process id="sampleCoreProcess" name="sampleCoreProcess" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+    <extensionElements>
+      <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2026-10-09T02:40:45.294Z]]></design:creationdate>
+      <design:modificationdate><![CDATA[2026-10-09T02:46:41.610Z]]></design:modificationdate>
+    </extensionElements>
+    <scriptTask id="ScriptTask_3" name="Log variables" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ScriptTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+      <script><![CDATA[// Placeholder script for "Log variables": replace with real logic.
+def processInstanceId = execution.getProcessInstanceId()
+execution.setVariable('logVariablesDone', true)
+]]></script>
+    </scriptTask>
+    <serviceTask id="DmnTask_TierAssignment" name="Tier Assignment" flowable:type="dmn">
+      <extensionElements>
+        <flowable:field name="decisionTableReferenceKey">
+          <flowable:string><![CDATA[sampleTierAssignment]]></flowable:string>
+        </flowable:field>
+        <flowable:field>
+          <flowable:string><![CDATA[false]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="fallbackToDefaultTenant">
+          <flowable:string><![CDATA[true]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="sameDeployment">
+          <flowable:string><![CDATA[true]]></flowable:string>
+        </flowable:field>
+        <flowable:decisionReferenceType>decisionTable</flowable:decisionReferenceType>
+        <design:stencilid>DmnTask</design:stencilid>
+        <design:stencilsuperid>Task</design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <startEvent id="StartEvent_SubProcess" flowable:initiator="initiator" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="EndEvent_Main">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="Flow_LimitAssign_To_LimitAssign" sourceRef="ScriptTask_3" targetRef="EndEvent_Main">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_InternalTier_To_Standardize1" sourceRef="DmnTask_TierAssignment" targetRef="ScriptTask_3">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_10" sourceRef="StartEvent_SubProcess" targetRef="DmnTask_TierAssignment">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sampleCoreProcess">
+    <bpmndi:BPMNPlane bpmnElement="sampleCoreProcess" id="BPMNPlane_sampleCoreProcess">
+      <bpmndi:BPMNShape bpmnElement="ScriptTask_3" id="BPMNShape_ScriptTask_3">
+        <omgdc:Bounds height="80.0" width="100.0" x="310" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="DmnTask_TierAssignment" id="BPMNShape_DmnTask_InternalTierAssignment">
+        <omgdc:Bounds height="80.0" width="100.0" x="130.0" y="0.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="StartEvent_SubProcess" id="BPMNShape_StartEvent_SubProcess">
+        <omgdc:Bounds height="30.0" width="30.0" x="0.0" y="25.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EndEvent_Main" id="BPMNShape_EndEvent_Main">
+        <omgdc:Bounds height="28.0" width="28.0" x="476" y="26.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="Flow_InternalTier_To_Standardize1" id="BPMNEdge_Flow_InternalTier_To_Standardize1" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="230.0" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="310" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_LimitAssign_To_LimitAssign" id="BPMNEdge_Flow_LimitAssign_To_LimitAssign" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="410" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="476" y="40"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_10" id="BPMNEdge_SequenceFlow_10" flowable:sourceDockerX="15.0" flowable:sourceDockerY="15.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="30.0" y="40.0"></omgdi:waypoint>
+        <omgdi:waypoint x="130.0" y="40.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

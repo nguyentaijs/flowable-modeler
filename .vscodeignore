@@ -1,0 +1,7 @@
+**
+!dist/*.js
+!dist/*.cjs
+!dist/*.css
+!README.md
+!CHANGELOG.md
+!package.json

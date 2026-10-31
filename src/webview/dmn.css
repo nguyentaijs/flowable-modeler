@@ -1,0 +1,90 @@
+body { margin: 0; background: var(--vscode-editor-background); color: var(--vscode-foreground); font: 13px var(--vscode-font-family, sans-serif); }
+#error { padding: 8px 12px; background: var(--vscode-inputValidation-errorBackground); color: var(--vscode-errorForeground); }
+#app { padding: 16px 20px; }
+
+/* decision header: compact fields in a row, like the title bar of a dmn-js table */
+.decision { margin-bottom: 32px; }
+.decision-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin-bottom: 10px; }
+.decision-head label { opacity: .7; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+.decision-head input, .decision-head select { width: auto; min-width: 140px; padding: 3px 6px; background: var(--vscode-input-background); color: var(--vscode-input-foreground); border: 1px solid var(--vscode-input-border, transparent); font: inherit; }
+
+/* the table: light grid, cells look like plain text until hovered or focused */
+.grid-wrap { overflow-x: auto; border: 1px solid var(--vscode-panel-border, #555); border-radius: 2px; }
+.dmn-grid { border-collapse: collapse; width: 100%; }
+.dmn-grid th, .dmn-grid td { border: 1px solid var(--vscode-panel-border, #555); padding: 0; vertical-align: middle; }
+.dmn-grid input, .dmn-grid select { box-sizing: border-box; width: 100%; min-width: 110px; margin: 0; padding: 7px 8px; background: transparent; color: inherit; border: 1px solid transparent; font: inherit; text-overflow: ellipsis; }
+.dmn-grid input:hover, .dmn-grid select:hover { background: var(--vscode-list-hoverBackground); }
+.dmn-grid input:focus, .dmn-grid select:focus { outline: none; background: var(--vscode-input-background); border-color: var(--vscode-focusBorder, #007fd4); }
+.dmn-grid select { appearance: none; cursor: pointer; }
+
+/* header cells: group titles, then label (bold), expression (mono) and type (muted) */
+.dmn-grid thead th, .dmn-grid > tr:nth-child(-n+4) > th { background: var(--vscode-editorWidget-background); font-weight: 600; }
+.dmn-grid th.when, .dmn-grid th.then { padding: 6px 8px; text-align: center; text-transform: uppercase; font-size: 11px; letter-spacing: .06em; }
+.dmn-grid th.when { border-bottom: 2px solid var(--vscode-charts-blue, #3b82f6); }
+.dmn-grid th.then { border-bottom: 2px solid var(--vscode-charts-green, #22a06b); border-left: 3px solid var(--vscode-panel-border, #555); }
+.dmn-grid th.empty { opacity: .5; text-align: center; padding: 6px; }
+.dmn-grid th > input:first-of-type { font-weight: 600; }
+.dmn-grid th select { font-size: 12px; opacity: .75; }
+.dmn-grid td.num { text-align: right; padding: 0 8px; white-space: nowrap; opacity: .65; background: var(--vscode-editorWidget-background); }
+.mono { font-family: var(--vscode-editor-font-family, monospace); }
+.dmn-grid td .mono { font-size: 12.5px; }
+
+/* actions stay out of the way until the cell or row is hovered */
+button { background: transparent; color: var(--vscode-foreground); border: 0; border-radius: 2px; padding: 2px 7px; margin: 1px; cursor: pointer; }
+button:hover { background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,.25)); }
+button.remove { color: var(--vscode-errorForeground); }
+.dmn-grid th button.remove { display: block; margin: 0 auto 2px; opacity: 0; font-size: 11px; }
+.dmn-grid th:hover button.remove { opacity: 1; }
+.dmn-grid .row-actions { white-space: nowrap; padding: 0 4px; opacity: 0; }
+.dmn-grid tr:hover .row-actions { opacity: 1; }
+.grip { display: block; text-align: center; cursor: grab; opacity: 0; user-select: none; line-height: 10px; padding: 4px 0 0; }
+td.num .grip { display: inline; padding: 0 4px 0 0; }
+.dmn-grid th:hover .grip, .dmn-grid tr:hover .grip { opacity: .7; }
+.grip:hover { opacity: 1 !important; }
+
+.toolbar { margin-top: 10px; display: flex; gap: 6px; }
+.toolbar button { border: 1px solid var(--vscode-panel-border, #555); padding: 4px 10px; }
+.empty { opacity: .6; }
+
+/* drop indicators while dragging */
+.dmn-grid tr.drop-before > td { box-shadow: inset 0 3px 0 var(--vscode-focusBorder, #007fd4); }
+.dmn-grid tr.drop-after > td { box-shadow: inset 0 -3px 0 var(--vscode-focusBorder, #007fd4); }
+.dmn-grid th.drop-before { box-shadow: inset 3px 0 0 var(--vscode-focusBorder, #007fd4); }
+.dmn-grid th.drop-after { box-shadow: inset -3px 0 0 var(--vscode-focusBorder, #007fd4); }
+
+/* column header: grip, label and remove button on one line */
+.col-head { display: flex; align-items: center; }
+.col-head input { flex: 1 1 auto; min-width: 90px; }
+.dmn-grid .col-head .grip, .dmn-grid .col-head button.remove { display: block; flex: none; margin: 0; padding: 0 5px; line-height: 1; }
+
+/* rule number cell: the remove button replaces the old actions column and shows on row hover */
+.dmn-grid td.num button.remove { opacity: 0; padding: 0 4px; }
+.dmn-grid tr:hover td.num button.remove { opacity: 1; }
+
+/* type and expression / variable share one line: type select on the left */
+.col-expr { display: flex; align-items: center; }
+.col-expr select { flex: none; width: auto; min-width: 0; font-size: 12px; opacity: .8; padding-right: 4px; border-right: 1px solid var(--vscode-panel-border, #555); }
+.col-expr input { flex: 1 1 auto; min-width: 90px; font-weight: 400; }
+.dmn-grid > tr:nth-child(-n+3) > th { background: var(--vscode-editorWidget-background); font-weight: 600; }
+
+/* remove buttons and drag grips are always visible, and large enough to hit */
+.dmn-grid th button.remove, .dmn-grid td.num button.remove { opacity: 1; font-size: 18px; line-height: 1; padding: 2px 7px; }
+.dmn-grid .grip { opacity: .7; font-size: 15px; }
+.dmn-grid .col-head .grip { padding: 0 6px; }
+.dmn-grid .col-head button.remove { padding: 0 8px; }
+
+/* allowed-values row: quieter than the header rows above it */
+.dmn-grid > tr:nth-child(-n+4) > th { background: var(--vscode-editorWidget-background); }
+.dmn-grid tr.values th input { font-weight: 400; font-size: 12px; opacity: .85; }
+
+/* the # column only takes what its grip, number and remove button need */
+.dmn-grid > tr:first-child > th:first-child, .dmn-grid td.num { width: 1%; white-space: nowrap; }
+.dmn-grid td.num { padding: 0 4px; text-align: left; }
+.dmn-grid td.num button.remove { margin: 0 0 0 2px; }
+
+/* "used by": the DMN tasks that refer to this decision */
+.used-by { margin: 0 0 10px; font-size: 12px; }
+.used-by-title { opacity: .7; text-transform: uppercase; letter-spacing: .04em; font-size: 11px; }
+.used-by-item { padding: 2px 0 0 12px; }
+.used-by a { color: var(--vscode-textLink-foreground); text-decoration: none; }
+.used-by a:hover { text-decoration: underline; }

@@ -1,0 +1,140 @@
+{
+  "name": "flowable-design-local",
+  "displayName": "Flowable Design Local",
+  "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "local",
+  "license": "UNLICENSED",
+  "categories": ["Visualization", "Programming Languages"],
+  "keywords": ["flowable", "bpmn", "dmn", "workflow"],
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "main": "./dist/extension.cjs",
+  "activationEvents": [
+    "onLanguage:xml",
+    "workspaceContains:**/*.bpmn",
+    "workspaceContains:**/*.dmn"
+  ],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "flowable.bpmnEditor",
+        "displayName": "Flowable BPMN Modeler",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.bpmn"
+          },
+          {
+            "filenamePattern": "*.bpmn20.xml"
+          }
+        ]
+      },
+      {
+        "viewType": "flowable.dmnEditor",
+        "displayName": "Flowable DMN Editor",
+        "priority": "default",
+        "selector": [
+          {
+            "filenamePattern": "*.dmn"
+          }
+        ]
+      }
+    ],
+    "configuration": {
+      "title": "Flowable Modeler",
+      "properties": {
+        "flowableModeler.disabledValidators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Names of validators to switch off (e.g. \"juel-syntax\", \"gateway-flows\"). See src/core/validators.mjs."
+        },
+        "flowableModeler.passThroughNamespaces": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "design"
+          ],
+          "description": "XML namespace prefixes that are kept as-is and never reported (e.g. Flowable Design's \"design\")."
+        },
+        "flowableModeler.run.engine": {
+          "type": "string",
+          "enum": ["mysql", "postgres"],
+          "default": "mysql",
+          "description": "Database engine of the Flowable history that \"Visualize Latest Run\" reads."
+        },
+        "flowableModeler.run.container": {
+          "type": "string",
+          "default": "",
+          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered."
+        },
+        "flowableModeler.run.dbUser": {
+          "type": "string",
+          "default": "flowable",
+          "description": "Database user (the standalone Flowable docker default is \"flowable\"). The password is stored by \"Flowable: Set Database Password\" (default \"flowable\")."
+        },
+        "flowableModeler.run.dbName": {
+          "type": "string",
+          "default": "flowable",
+          "description": "Database name (the standalone Flowable docker default is \"flowable\")."
+        },
+        "flowableModeler.run.dockerPath": {
+          "type": "string",
+          "default": "docker",
+          "description": "Docker CLI to run."
+        },
+        "flowableModeler.run.dbCommand": {
+          "type": "string",
+          "default": "",
+          "description": "Full command that reads SQL on stdin and prints plain rows, e.g. \"docker exec -i db mysql -u flowable -pflowable -N -B -r flowable\". Overrides container, user and name."
+        },
+        "flowableModeler.run.bpmnFolder": {
+          "type": "string",
+          "default": "",
+          "description": "Workspace folder searched for the .bpmn files of a run (matched by process id). Empty: the whole workspace."
+        },
+        "flowableModeler.run.listLimit": {
+          "type": "number",
+          "default": 10,
+          "minimum": 1,
+          "description": "How many recent runs \"Visualize a Run...\" lists."
+        }
+      }
+    },
+    "commands": [
+      { "command": "flowable.configureDatabase", "title": "Flowable: Configure Database Connection" },
+      { "command": "flowable.setDatabasePassword", "title": "Flowable: Set Database Password" },
+      { "command": "flowable.visualizeLatestRun", "title": "Flowable: Visualize Latest Run", "icon": "$(play-circle)" },
+      { "command": "flowable.visualizeRun", "title": "Flowable: Visualize a Run..." }
+    ],
+    "menus": {
+      "editor/title": [
+        { "command": "flowable.visualizeLatestRun", "when": "resourceFilename =~ /\\.bpmn(20\\.xml)?$/", "group": "navigation" }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "watch": "node scripts/build.mjs --watch",
+    "test": "node --test",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "bpmn-js": "^18.31.1",
+    "bpmn-moddle": "^9.0.4"
+  },
+  "devDependencies": {
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "^3.0.0",
+    "esbuild": "^0.28.2",
+    "jsdom": "^29.1.1"
+  }
+}

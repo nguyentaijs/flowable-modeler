@@ -1,0 +1,169 @@
+@import 'bpmn-js/dist/assets/diagram-js.css';
+@import 'bpmn-js/dist/assets/bpmn-js.css';
+@import 'bpmn-js/dist/assets/bpmn-font/css/bpmn-embedded.css';
+
+html,
+body,
+#layout,
+#canvas {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#layout {
+  display: flex;
+}
+
+#canvas {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#splitter {
+  flex: 0 0 5px;
+  cursor: col-resize;
+  background: var(--vscode-sideBar-border, #ccc);
+  touch-action: none;
+}
+
+#splitter:hover,
+body.resizing #splitter {
+  background: var(--vscode-focusBorder, #007fd4);
+}
+
+body.resizing {
+  user-select: none;
+  cursor: col-resize;
+}
+
+#panel {
+  flex: 0 0 320px;
+  min-width: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 8px 12px;
+  background: var(--vscode-sideBar-background, #f3f3f3);
+  color: var(--vscode-foreground, #222);
+  font: 12px var(--vscode-font-family, sans-serif);
+}
+
+#panel h2 {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+#panel details {
+  margin-bottom: 8px;
+}
+
+#panel summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+#panel .field {
+  margin: 6px 0;
+}
+
+#panel label {
+  display: block;
+  margin-bottom: 2px;
+  opacity: 0.8;
+}
+
+#panel input[type='checkbox'] {
+  width: auto;
+  margin-right: 4px;
+}
+
+#panel input:not([type='checkbox']),
+#panel select,
+#panel textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 3px 4px;
+  font: 12px var(--vscode-editor-font-family, monospace);
+  color: var(--vscode-input-foreground, #222);
+  background: var(--vscode-input-background, #fff);
+  border: 1px solid var(--vscode-input-border, #aaa);
+}
+
+#panel .juel {
+  color: var(--vscode-errorForeground, #b00020);
+  min-height: 0;
+}
+
+#panel .empty,
+#panel .summary {
+  opacity: 0.7;
+  margin: 0;
+  padding-left: 16px;
+}
+
+body {
+  background: #fff;
+}
+
+#error {
+  position: fixed;
+  inset: 0 0 auto 0;
+  padding: 8px 12px;
+  background: #b00020;
+  color: #fff;
+  font: 13px var(--vscode-font-family, sans-serif);
+  white-space: pre-wrap;
+  z-index: 10;
+}
+
+#error[hidden] {
+  display: none;
+}
+
+#panel .list-row {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--vscode-input-border, #aaa);
+}
+
+#panel .list-cells {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#panel .list-cell {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin-bottom: 2px;
+}
+
+#panel .list-cell select {
+  width: auto;
+}
+
+#panel .list-cell input:not([type='checkbox']) {
+  flex: 1 1 60%;
+  min-width: 0;
+}
+
+#panel .list .juel {
+  flex: 1 1 100%;
+}
+
+#panel button {
+  cursor: pointer;
+  color: var(--vscode-button-foreground, #fff);
+  background: var(--vscode-button-background, #0e639c);
+  border: 0;
+  padding: 2px 8px;
+}
+
+.input-with-button { display: flex; gap: 4px; }
+.input-with-button input { flex: 1 1 auto; min-width: 0; }
+.input-with-button button { flex: none; }

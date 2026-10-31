@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:flowable="http://flowable.org/bpmn" xmlns:design="http://flowable.org/design" targetNamespace="http://flowable.org/test">
+  <process id="fieldsProcess" name="fieldsProcess" isExecutable="true">
+    <startEvent id="StartEvent_1"></startEvent>
+    <serviceTask id="ServiceTask_Fields" name="Service task with fields" flowable:delegateExpression="${sampleDelegate}">
+      <extensionElements>
+        <flowable:field name="firstField">
+          <flowable:expression><![CDATA[${request.id}]]></flowable:expression>
+        </flowable:field>
+        <flowable:field name="secondField">
+          <flowable:string><![CDATA[plain text]]></flowable:string>
+        </flowable:field>
+        <flowable:field name="thirdField">
+          <flowable:expression><![CDATA[${request.region}]]></flowable:expression>
+        </flowable:field>
+        <design:stencilid><![CDATA[ServiceTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+    </serviceTask>
+    <endEvent id="EndEvent_1"></endEvent>
+    <sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="ServiceTask_Fields"></sequenceFlow>
+    <sequenceFlow id="Flow_2" sourceRef="ServiceTask_Fields" targetRef="EndEvent_1"></sequenceFlow>
+  </process>
+</definitions>

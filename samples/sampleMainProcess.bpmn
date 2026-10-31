@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:flowable="http://flowable.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:design="http://flowable.org/design" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://flowable.org/test" exporter="Flowable Design" exporterVersion="2026.1.1" design:palette="flowable-work-process-palette">
+  <process id="sampleMainProcess" name="sampleMainProcess" isExecutable="true" flowable:candidateStarterGroups="flowableUser">
+    <extensionElements>
+      <flowable:candidates-type><![CDATA[all]]></flowable:candidates-type>
+      <design:stencilid><![CDATA[BPMNDiagram]]></design:stencilid>
+      <design:creationdate><![CDATA[2026-10-06T03:03:51.449Z]]></design:creationdate>
+      <design:modificationdate><![CDATA[2026-10-08T07:41:05.211Z]]></design:modificationdate>
+    </extensionElements>
+    <callActivity id="CallActivity_CallProcess" name="Call custom promotion" calledElement="${selectedProcessId}" flowable:fallbackToDefaultTenant="true">
+      <extensionElements>
+        <flowable:in source="requestData" target="requestData"></flowable:in>
+        <flowable:in source="promotions" target="promotions"></flowable:in>
+        <flowable:out source="decisionResult" target="promotionDecisionResult"></flowable:out>
+        <flowable:static-process-key><![CDATA[${availablePromotion.processId}]]></flowable:static-process-key>
+        <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
+      </extensionElements>
+    </callActivity>
+    <callActivity id="CallActivity_CallCoreProcess" name="Call Standard" calledElement="${selectedProcessId != null ? selectedProcessId : defaultProcessId}" flowable:fallbackToDefaultTenant="true">
+      <extensionElements>
+        <flowable:in source="requestData" target="requestData"></flowable:in>
+        <flowable:in source="promotions" target="promotions"></flowable:in>
+        <flowable:out source="decisionResult" target="standardDecisionResult"></flowable:out>
+        <flowable:static-process-key><![CDATA[${availablePromotion != null && availablePromotion.coreProcessId != null ? availablePromotion.coreProcessId : defaultCoreProcessId}]]></flowable:static-process-key>
+        <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
+      </extensionElements>
+    </callActivity>
+    <scriptTask id="ScriptTask_Log_variables" name="Log variables" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <extensionElements>
+        <design:stencilid>ScriptTask</design:stencilid>
+        <design:stencilsuperid>Task</design:stencilsuperid>
+      </extensionElements>
+      <script><![CDATA[// Placeholder script for "Log variables": replace with real logic.
+def processInstanceId = execution.getProcessInstanceId()
+execution.setVariable('logVariablesDone', true)
+]]></script>
+    </scriptTask>
+    <scriptTask id="ScriptTask_32" name="Prepare promotions" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ScriptTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+      <script><![CDATA[// Placeholder script for "Prepare promotions": replace with real logic.
+def processInstanceId = execution.getProcessInstanceId()
+execution.setVariable('preparePromotionsDone', true)
+]]></script>
+    </scriptTask>
+    <scriptTask id="ScriptTask_52" name="Merge result" scriptFormat="groovy" flowable:autoStoreVariables="false">
+      <extensionElements>
+        <design:stencilid><![CDATA[ScriptTask]]></design:stencilid>
+        <design:stencilsuperid><![CDATA[Task]]></design:stencilsuperid>
+      </extensionElements>
+      <script><![CDATA[// Placeholder script for "Merge result": replace with real logic.
+def processInstanceId = execution.getProcessInstanceId()
+execution.setVariable('mergeResultDone', true)
+]]></script>
+    </scriptTask>
+    <callActivity id="CallActivity_52" name="Call Standard" calledElement="${selectedProcessId != null ? selectedProcessId : defaultProcessId}" flowable:fallbackToDefaultTenant="true">
+      <extensionElements>
+        <flowable:in source="requestData" target="requestData"></flowable:in>
+        <flowable:in source="promotions" target="promotions"></flowable:in>
+        <flowable:out source="decisionResult" target="standardDecisionResult"></flowable:out>
+        <flowable:static-process-key><![CDATA[${availablePromotion != null && availablePromotion.coreProcessId != null ? availablePromotion.coreProcessId : defaultCoreProcessId}]]></flowable:static-process-key>
+        <design:stencilid><![CDATA[CallActivity]]></design:stencilid>
+      </extensionElements>
+    </callActivity>
+    <exclusiveGateway id="Gateway_HasAvailablePromotion" name="Available promotion?" default="Flow_NoAvailablePromotion_To_CallStandard">
+      <extensionElements>
+        <design:stencilid><![CDATA[Exclusive_Databased_Gateway]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </exclusiveGateway>
+    <parallelGateway id="Gateway_MakeDecisionSplit">
+      <extensionElements>
+        <design:stencilid><![CDATA[ParallelGateway]]></design:stencilid>
+      </extensionElements>
+    </parallelGateway>
+    <parallelGateway id="Gateway_MakeDecisionJoin">
+      <extensionElements>
+        <design:stencilid><![CDATA[ParallelGateway]]></design:stencilid>
+      </extensionElements>
+    </parallelGateway>
+    <startEvent id="StartEvent_Main" flowable:initiator="initiator" flowable:formFieldValidation="false">
+      <extensionElements>
+        <flowable:work-form-field-validation><![CDATA[false]]></flowable:work-form-field-validation>
+        <design:stencilid><![CDATA[StartNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </startEvent>
+    <endEvent id="EndEvent_DecisionComplete">
+      <extensionElements>
+        <design:stencilid><![CDATA[EndNoneEvent]]></design:stencilid>
+      </extensionElements>
+    </endEvent>
+    <sequenceFlow id="Flow_CallProcess_To_MakeDecisionJoin" sourceRef="CallActivity_CallProcess" targetRef="Gateway_MakeDecisionJoin">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_CallStandard_To_AfterStandardDecision" sourceRef="CallActivity_CallCoreProcess" targetRef="ScriptTask_52">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_33" sourceRef="ScriptTask_Log_variables" targetRef="ScriptTask_32">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_Script32_To_HasAvailablePromotion" sourceRef="ScriptTask_32" targetRef="Gateway_HasAvailablePromotion">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_53" sourceRef="CallActivity_52" targetRef="Gateway_MakeDecisionJoin">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_HasAvailablePromotion_To_Parallel" name="Yes" sourceRef="Gateway_HasAvailablePromotion" targetRef="Gateway_MakeDecisionSplit">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${availablePromotion != null && availablePromotion.processId != null}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_NoAvailablePromotion_To_CallStandard" name="No" sourceRef="Gateway_HasAvailablePromotion" targetRef="CallActivity_CallCoreProcess">
+      <extensionElements>
+        <flowable:is-default-flow><![CDATA[true]]></flowable:is-default-flow>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+        <design:display_ref_in_diagram><![CDATA[true]]></design:display_ref_in_diagram>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_MakeDecisionSplit_To_CallProcess" sourceRef="Gateway_MakeDecisionSplit" targetRef="CallActivity_CallProcess">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_MakeDecisionSplit_To_CallCoreProcess" sourceRef="Gateway_MakeDecisionSplit" targetRef="CallActivity_52">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="SequenceFlow_56" sourceRef="Gateway_MakeDecisionJoin" targetRef="ScriptTask_52">
+      <extensionElements>
+        <design:stencilid><![CDATA[SequenceFlow]]></design:stencilid>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="Flow_0kqsmon" sourceRef="StartEvent_Main" targetRef="ScriptTask_Log_variables" />
+    <sequenceFlow id="Flow_0hm4fnu" sourceRef="ScriptTask_52" targetRef="EndEvent_DecisionComplete" />
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_sampleMainProcess">
+    <bpmndi:BPMNPlane bpmnElement="sampleMainProcess" id="BPMNPlane_sampleMainProcess">
+      <bpmndi:BPMNShape bpmnElement="CallActivity_CallProcess" id="BPMNShape_CallActivity_CallProcess">
+        <omgdc:Bounds height="80.0" width="100.0" x="1428" y="360"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CallActivity_CallCoreProcess" id="BPMNShape_CallActivity_CallCoreProcess">
+        <omgdc:Bounds height="80.0" width="100.0" x="1428.0648309810867" y="156.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ScriptTask_Log_variables" id="BPMNShape_ScriptTask_51">
+        <omgdc:Bounds height="80.0" width="100.0" x="730.0" y="328.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ScriptTask_32" id="BPMNShape_ScriptTask_32">
+        <omgdc:Bounds height="80.0" width="100.0" x="920" y="328"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="ScriptTask_52" id="BPMNShape_ScriptTask_52">
+        <omgdc:Bounds height="80.0" width="100.0" x="1910" y="370"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="CallActivity_52" id="BPMNShape_CallActivity_52">
+        <omgdc:Bounds height="80.0" width="100.0" x="1428" y="550"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_HasAvailablePromotion" id="BPMNShape_Gateway_HasAvailablePromotion" isMarkerVisible="true">
+        <omgdc:Bounds height="40.0" width="40.0" x="1130.0" y="348.0"></omgdc:Bounds>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="105.0" x="1174.4818181818182" y="359.05721925133685"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_MakeDecisionSplit" id="BPMNShape_Gateway_MakeDecisionSplit">
+        <omgdc:Bounds height="40.0" width="40.0" x="1214.92192513369" y="490.80962566844926"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Gateway_MakeDecisionJoin" id="BPMNShape_Gateway_MakeDecisionJoin">
+        <omgdc:Bounds height="40.0" width="40.0" x="1721.0291213623927" y="490.80962566844926"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="StartEvent_Main" id="BPMNShape_StartEvent_Main">
+        <omgdc:Bounds height="30.0" width="30.0" x="585" y="353.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="EndEvent_DecisionComplete" id="BPMNShape_EndEvent_DecisionComplete">
+        <omgdc:Bounds height="28.0" width="28.0" x="2076" y="396"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="Flow_MakeDecisionSplit_To_CallProcess" id="BPMNEdge_Flow_MakeDecisionSplit_To_CallProcess" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1235" y="491"></omgdi:waypoint>
+        <omgdi:waypoint x="1235" y="400"></omgdi:waypoint>
+        <omgdi:waypoint x="1428" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_CallStandard_To_AfterStandardDecision" id="BPMNEdge_Flow_CallStandard_To_AfterStandardDecision" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1528" y="196.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1834.0533858669487" y="196.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="1834.0533858669487" y="410"></omgdi:waypoint>
+        <omgdi:waypoint x="1910" y="410"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_NoAvailablePromotion_To_CallStandard" id="BPMNEdge_Flow_NoAvailablePromotion_To_CallStandard" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1150.0" y="348.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1150.0" y="196.00000000000003"></omgdi:waypoint>
+        <omgdi:waypoint x="1428.0648309810867" y="196.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="16.0" x="1157.0" y="315.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_MakeDecisionSplit_To_CallCoreProcess" id="BPMNEdge_Flow_MakeDecisionSplit_To_CallCoreProcess" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1235" y="531"></omgdi:waypoint>
+        <omgdi:waypoint x="1235" y="600"></omgdi:waypoint>
+        <omgdi:waypoint x="1428" y="600"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_33" id="BPMNEdge_SequenceFlow_33" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="830.0" y="368.0"></omgdi:waypoint>
+        <omgdi:waypoint x="920" y="368.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_Script32_To_HasAvailablePromotion" id="BPMNEdge_Flow_Script32_To_HasAvailablePromotion" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1020" y="368"></omgdi:waypoint>
+        <omgdi:waypoint x="1130" y="368"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_56" id="BPMNEdge_SequenceFlow_56" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="50.0" flowable:targetDockerY="40.0">
+        <omgdi:waypoint x="1761" y="511"></omgdi:waypoint>
+        <omgdi:waypoint x="1834.5775170843176" y="510.80962566844926"></omgdi:waypoint>
+        <omgdi:waypoint x="1834.5775170843176" y="410"></omgdi:waypoint>
+        <omgdi:waypoint x="1910" y="410"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_CallProcess_To_MakeDecisionJoin" id="BPMNEdge_Flow_CallProcess_To_MakeDecisionJoin" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1528" y="400"></omgdi:waypoint>
+        <omgdi:waypoint x="1741" y="400"></omgdi:waypoint>
+        <omgdi:waypoint x="1741" y="491" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kqsmon_di" bpmnElement="Flow_0kqsmon">
+        <omgdi:waypoint x="615" y="368" />
+        <omgdi:waypoint x="730" y="368" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hm4fnu_di" bpmnElement="Flow_0hm4fnu">
+        <omgdi:waypoint x="2010" y="410" />
+        <omgdi:waypoint x="2076" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="SequenceFlow_53" id="BPMNEdge_SequenceFlow_53" flowable:sourceDockerX="50.0" flowable:sourceDockerY="40.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1528" y="590"></omgdi:waypoint>
+        <omgdi:waypoint x="1741" y="590"></omgdi:waypoint>
+        <omgdi:waypoint x="1741" y="531"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="Flow_HasAvailablePromotion_To_Parallel" id="BPMNEdge_Flow_HasAvailablePromotion_To_Parallel" flowable:sourceDockerX="20.0" flowable:sourceDockerY="20.0" flowable:targetDockerX="20.0" flowable:targetDockerY="20.0">
+        <omgdi:waypoint x="1150.0" y="388.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1150.0" y="510.8096256684492"></omgdi:waypoint>
+        <omgdi:waypoint x="1214.92192513369" y="510.80962566844926"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="18.0" width="19.0" x="1156.1727272727273" y="416.3663101604278"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

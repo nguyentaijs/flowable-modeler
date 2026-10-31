@@ -1,0 +1,1139 @@
+{
+  "engine": "flowable-community",
+  "version": "7.2.0",
+  "source": "https://github.com/flowable/flowable-engine/tree/flowable-7.2.0/modules/flowable-bpmn-converter",
+  "generatedBy": "scripts/extract-flowable-schema.mjs",
+  "namespaces": {
+    "flowable": "http://flowable.org/bpmn",
+    "bpmn": "http://www.omg.org/spec/BPMN/20100524/MODEL"
+  },
+  "note": "Attributes not listed for an element are treated as custom attributes by the engine (kept in the model, ignored at runtime).",
+  "attributeTypes": {
+    "extensionId": {
+      "type": "string"
+    },
+    "initiator": {
+      "type": "string"
+    },
+    "history": {
+      "type": "enum",
+      "values": [
+        "none",
+        "activity",
+        "audit",
+        "full"
+      ]
+    },
+    "formKey": {
+      "type": "string"
+    },
+    "formFieldValidation": {
+      "type": "string"
+    },
+    "formHandlerClass": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enum",
+      "values": [
+        "camel",
+        "http",
+        "mail",
+        "shell",
+        "dmn",
+        "case",
+        "send-event",
+        "external-worker"
+      ]
+    },
+    "readable": {
+      "type": "string"
+    },
+    "writable": {
+      "type": "string"
+    },
+    "required": {
+      "type": "string"
+    },
+    "variable": {
+      "type": "string"
+    },
+    "expression": {
+      "type": "expression"
+    },
+    "datePattern": {
+      "type": "string"
+    },
+    "value": {
+      "type": "expression"
+    },
+    "class": {
+      "type": "string"
+    },
+    "caseDefinitionKey": {
+      "type": "string"
+    },
+    "resultVariable": {
+      "type": "string"
+    },
+    "resultVariableName": {
+      "type": "string"
+    },
+    "parallelInSameTransaction": {
+      "type": "boolean"
+    },
+    "skipExpression": {
+      "type": "string"
+    },
+    "delegateExpression": {
+      "type": "expression"
+    },
+    "async": {
+      "type": "boolean"
+    },
+    "exclusive": {
+      "type": "boolean"
+    },
+    "asyncLeave": {
+      "type": "boolean"
+    },
+    "triggerable": {
+      "type": "string"
+    },
+    "noWaitStatesAsyncLeave": {
+      "type": "boolean"
+    },
+    "useLocalScopeForResultVariable": {
+      "type": "boolean"
+    },
+    "storeResultVariableAsTransient": {
+      "type": "boolean"
+    },
+    "topic": {
+      "type": "string"
+    },
+    "doNotIncludeVariables": {
+      "type": "boolean"
+    },
+    "stringValue": {
+      "type": "string"
+    },
+    "assignee": {
+      "type": "string"
+    },
+    "dueDate": {
+      "type": "expression"
+    },
+    "businessCalendarName": {
+      "type": "expression"
+    },
+    "candidateUsers": {
+      "type": "string"
+    },
+    "candidateGroups": {
+      "type": "string"
+    },
+    "priority": {
+      "type": "string"
+    },
+    "candidateStarterUsers": {
+      "type": "string"
+    },
+    "candidateStarterGroups": {
+      "type": "string"
+    },
+    "event": {
+      "type": "enum",
+      "values": [
+        "start",
+        "end",
+        "take"
+      ]
+    },
+    "onTransaction": {
+      "type": "enum",
+      "values": [
+        "before-commit",
+        "committed",
+        "rolled-back"
+      ]
+    },
+    "customPropertiesResolverClass": {
+      "type": "string"
+    },
+    "customPropertiesResolverExpression": {
+      "type": "expression"
+    },
+    "customPropertiesResolverDelegateExpression": {
+      "type": "expression"
+    },
+    "events": {
+      "type": "string"
+    },
+    "entityType": {
+      "type": "enum",
+      "values": [
+        "attachment",
+        "comment",
+        "execution",
+        "identity-link",
+        "job",
+        "process-definition",
+        "process-instance",
+        "task"
+      ]
+    },
+    "throwEvent": {
+      "type": "enum",
+      "values": [
+        "signal",
+        "globalSignal",
+        "message",
+        "error"
+      ]
+    },
+    "signalName": {
+      "type": "string"
+    },
+    "messageName": {
+      "type": "string"
+    },
+    "errorCode": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "sourceExpression": {
+      "type": "expression"
+    },
+    "target": {
+      "type": "string"
+    },
+    "transient": {
+      "type": "boolean",
+      "default": "false"
+    },
+    "collection": {
+      "type": "string"
+    },
+    "elementVariable": {
+      "type": "string"
+    },
+    "elementIndexVariable": {
+      "type": "string"
+    },
+    "endDate": {
+      "type": "string"
+    },
+    "calledElementType": {
+      "type": "enum",
+      "values": [
+        "key",
+        "id"
+      ]
+    },
+    "fallbackToDefaultTenant": {
+      "type": "boolean"
+    },
+    "sameDeployment": {
+      "type": "boolean"
+    },
+    "businessKey": {
+      "type": "expression"
+    },
+    "inheritBusinessKey": {
+      "type": "boolean"
+    },
+    "autoStoreVariables": {
+      "type": "boolean",
+      "default": "false"
+    },
+    "taskIdVariableName": {
+      "type": "string",
+      "default": ""
+    },
+    "taskCompleterVariableName": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "elements": {
+    "startEvent": {
+      "converter": "StartEventXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "formFieldValidation",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "formKey",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "initiator",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "isInterrupting",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        },
+        {
+          "name": "sameDeployment",
+          "ns": "flowable",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "in",
+          "source": "StartEventXMLConverter.childParserMap (InParameterParser)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "endEvent": {
+      "converter": "EndEventXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        }
+      ],
+      "children": [
+        {
+          "name": "out",
+          "source": "EndEventXMLConverter.childParserMap (OutParameterParser)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "sequenceFlow": {
+      "converter": "SequenceFlowXMLConverter",
+      "attributes": [
+        {
+          "name": "skipExpression",
+          "ns": "bpmn"
+        },
+        {
+          "name": "sourceRef",
+          "ns": "bpmn"
+        },
+        {
+          "name": "targetRef",
+          "ns": "bpmn"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "exclusiveGateway": {
+      "converter": "ExclusiveGatewayXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "inclusiveGateway": {
+      "converter": "InclusiveGatewayXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "parallelGateway": {
+      "converter": "ParallelGatewayXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "scriptTask": {
+      "converter": "ScriptTaskXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "autoStoreVariables",
+          "ns": "flowable",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "doNotIncludeVariables",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        },
+        {
+          "name": "resultVariable",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "resultVariableName",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "scriptFormat",
+          "ns": "bpmn"
+        },
+        {
+          "name": "skipExpression",
+          "ns": "flowable",
+          "type": "string"
+        }
+      ],
+      "children": [
+        {
+          "name": "in",
+          "source": "ScriptTaskXMLConverter.childParserMap (InParameterParser)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "serviceTask": {
+      "converter": "ServiceTaskXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "businessKey",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "caseDefinitionKey",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "caseInstanceName",
+          "ns": "flowable"
+        },
+        {
+          "name": "class",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "delegateExpression",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "expression",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "extensionId",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "fallbackToDefaultTenant",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "idVariableName",
+          "ns": "flowable"
+        },
+        {
+          "name": "implementation",
+          "ns": "bpmn"
+        },
+        {
+          "name": "inheritBusinessKey",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        },
+        {
+          "name": "operationRef",
+          "ns": "bpmn"
+        },
+        {
+          "name": "parallelInSameTransaction",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "resultVariable",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "resultVariableName",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "sameDeployment",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "skipExpression",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "storeResultVariableAsTransient",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "topic",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "triggerable",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "ns": "flowable",
+          "type": "enum",
+          "values": [
+            "camel",
+            "http",
+            "mail",
+            "shell",
+            "dmn",
+            "case",
+            "send-event",
+            "external-worker"
+          ]
+        },
+        {
+          "name": "useLocalScopeForResultVariable",
+          "ns": "flowable",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "field",
+          "source": "FieldExtensionParser.accepts (ServiceTask)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "callActivity": {
+      "converter": "CallActivityXMLConverter",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "businessKey",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "calledElement",
+          "ns": "bpmn"
+        },
+        {
+          "name": "calledElementType",
+          "ns": "flowable",
+          "type": "enum",
+          "values": [
+            "key",
+            "id"
+          ]
+        },
+        {
+          "name": "completeAsync",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "fallbackToDefaultTenant",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "idVariableName",
+          "ns": "flowable"
+        },
+        {
+          "name": "inheritBusinessKey",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "inheritVariables",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        },
+        {
+          "name": "processInstanceName",
+          "ns": "flowable"
+        },
+        {
+          "name": "sameDeployment",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "useLocalScopeForOutParameters",
+          "ns": "flowable",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "in",
+          "source": "InParameterParser (CallActivity)"
+        },
+        {
+          "name": "out",
+          "source": "OutParameterParser (CallActivity)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "userTask": {
+      "converter": "UserTaskXMLConverter",
+      "attributes": [
+        {
+          "name": "assignee",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "businessCalendarName",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "candidateGroups",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "candidateUsers",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "ns": "flowable"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "dueDate",
+          "ns": "flowable",
+          "type": "expression"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "extensionId",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "formFieldValidation",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "formKey",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "ns": "bpmn"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "ns": "bpmn"
+        },
+        {
+          "name": "owner",
+          "ns": "flowable"
+        },
+        {
+          "name": "priority",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "sameDeployment",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "skipExpression",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "taskCompleterVariableName",
+          "ns": "flowable",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "taskIdVariableName",
+          "ns": "flowable",
+          "type": "string",
+          "default": ""
+        }
+      ],
+      "children": [
+        {
+          "name": "taskListener",
+          "source": "TaskListenerParser (UserTask)"
+        },
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "subProcess": {
+      "converter": "parser/SubProcessParser",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeave",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeaveExclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "triggeredByEvent",
+          "ns": "bpmn",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "multiInstanceLoopCharacteristics": {
+      "converter": "child/MultiInstanceParser",
+      "attributes": [
+        {
+          "name": "collection",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "elementIndexVariable",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "elementVariable",
+          "ns": "flowable",
+          "type": "string"
+        },
+        {
+          "name": "isSequential",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "noWaitStatesAsyncLeave",
+          "ns": "flowable",
+          "type": "boolean"
+        }
+      ],
+      "children": []
+    },
+    "transaction": {
+      "converter": "parser/SubProcessParser (variant)",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeave",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeaveExclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "triggeredByEvent",
+          "ns": "bpmn",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    },
+    "adHocSubProcess": {
+      "converter": "parser/SubProcessParser (variant)",
+      "attributes": [
+        {
+          "name": "async",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeave",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "asyncLeaveExclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "cancelRemainingInstances",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "default",
+          "ns": "bpmn"
+        },
+        {
+          "name": "exclusive",
+          "ns": "flowable",
+          "type": "boolean"
+        },
+        {
+          "name": "isForCompensation",
+          "ns": "bpmn",
+          "type": "boolean"
+        },
+        {
+          "name": "ordering",
+          "ns": "bpmn"
+        },
+        {
+          "name": "triggeredByEvent",
+          "ns": "bpmn",
+          "type": "boolean"
+        }
+      ],
+      "children": [
+        {
+          "name": "executionListener",
+          "source": "ExecutionListenerParser (HasExecutionListeners)"
+        }
+      ]
+    }
+  }
+}

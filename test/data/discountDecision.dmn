@@ -1,0 +1,83 @@
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:flowable="http://flowable.org/dmn" xmlns:design="http://flowable.org/design" id="definition_discountDecision" name="discountDecision" namespace="http://www.flowable.org/dmn">
+  <decision id="discountDecision" name="Discount decision">
+    <decisionTable id="decisionTable_discountDecision" hitPolicy="FIRST">
+      <input label="orderTotal (&gt;)">
+        <inputExpression id="inputExpression_1" typeRef="number">
+          <text>orderTotal</text>
+        </inputExpression>
+      </input>
+      <input label="orderTotal (&lt;=)">
+        <inputExpression id="inputExpression_2" typeRef="number">
+          <text>orderTotal</text>
+        </inputExpression>
+      </input>
+      <input label="tier">
+        <inputExpression id="inputExpression_3" typeRef="string">
+          <text>tier</text>
+        </inputExpression>
+        <inputValues>
+          <text>"A","B"</text>
+        </inputValues>
+      </input>
+      <output id="outputExpression_1" label="discountAmount" name="discountAmount" typeRef="number"></output>
+      <output id="outputExpression_2" label="feePercent" name="feePercent" typeRef="number"></output>
+      <rule>
+        <description>orderTotal [0,100] + A</description>
+        <inputEntry id="inputEntry_1_1"><text><![CDATA[>= 0]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_1"><text><![CDATA[<= 100]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_1"><text><![CDATA[== "A"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_1"><text><![CDATA[10]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_1"><text><![CDATA[1.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>orderTotal [0,100] + B</description>
+        <inputEntry id="inputEntry_1_2"><text><![CDATA[>= 0]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_2"><text><![CDATA[<= 100]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_2"><text><![CDATA[== "B"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_2"><text><![CDATA[5]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_2"><text><![CDATA[1.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>orderTotal (100,500] + A</description>
+        <inputEntry id="inputEntry_1_3"><text><![CDATA[> 100]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_3"><text><![CDATA[<= 500]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_3"><text><![CDATA[== "A"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_3"><text><![CDATA[40]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_3"><text><![CDATA[2.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>orderTotal (100,500] + B</description>
+        <inputEntry id="inputEntry_1_4"><text><![CDATA[> 100]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_4"><text><![CDATA[<= 500]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_4"><text><![CDATA[== "B"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_4"><text><![CDATA[25]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_4"><text><![CDATA[2.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>orderTotal over 500 + A</description>
+        <inputEntry id="inputEntry_1_5"><text><![CDATA[> 500]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_5"><text><![CDATA[<= 10000]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_5"><text><![CDATA[== "A"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_5"><text><![CDATA[120]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_5"><text><![CDATA[3.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>orderTotal over 500 + B</description>
+        <inputEntry id="inputEntry_1_6"><text><![CDATA[> 500]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_6"><text><![CDATA[<= 10000]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_6"><text><![CDATA[== "B"]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_6"><text><![CDATA[80]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_6"><text><![CDATA[3.5]]></text></outputEntry>
+      </rule>
+      <rule>
+        <description>Catch-all: no discount</description>
+        <inputEntry id="inputEntry_1_7"><text><![CDATA[-]]></text></inputEntry>
+        <inputEntry id="inputEntry_2_7"><text><![CDATA[-]]></text></inputEntry>
+        <inputEntry id="inputEntry_3_7"><text><![CDATA[-]]></text></inputEntry>
+        <outputEntry id="outputEntry_1_7"><text><![CDATA[0]]></text></outputEntry>
+        <outputEntry id="outputEntry_2_7"><text><![CDATA[0]]></text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI></dmndi:DMNDI>
+</definitions>
