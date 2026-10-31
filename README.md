@@ -162,7 +162,7 @@ The **Flowable Modeler** output channel (View → Output) holds the details: eve
 
 - Targets Flowable Community **7.2.0** only. Work-only tags (`static-process-key`, `decisionReferenceType`, `work-form-field-validation`, `is-default-flow`) are not recognised by the engine; they are passed through, never created.
 - Camunda attributes are not supported. For example, `asyncBefore` is only read from the Camunda namespace in 7.2.0, so it is not offered.
-- Run visualization: sequence flows are inferred from the steps that ran (history does not store them); only final variable values exist; Java-serialized `Map` variables cannot be decoded (a readable `<name>Json` twin or recovered strings are shown instead); the MySQL and PostgreSQL paths are checked against made-up rows only, not yet against a live Flowable database.
+- Run visualization: sequence flows are inferred from the steps that ran (history does not store them); only final variable values exist; Java-serialized variables (Groovy maps and lists) are decoded for the common types (collections, numbers, `BigDecimal`, dates, arrays), and any other class is shown as its fields; the MySQL and PostgreSQL paths are checked against made-up rows only, not yet against a live Flowable database.
 - Only decision tables are editable in the DMN editor.
 
 ## Roadmap
@@ -175,6 +175,10 @@ The **Flowable Modeler** output channel (View → Output) holds the details: eve
 | Navigation | Select the exact DMN task when opening a process from "Used by"; jump from a call activity to its process; warn about the same decision id in several files |
 | Validation | Authoritative check with Flowable's own process validator (needs a Java 17 runtime) |
 | Tooling | "Strip design:*" command; save and reopen a run without the database |
+
+## Contact
+
+Questions, feedback or ideas: [Contact the author](https://www.linkedin.com/in/nguyentaijs). The same link sits in the bottom right corner of the BPMN and DMN editors.
 
 ## Contributing
 

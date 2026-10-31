@@ -1,3 +1,5 @@
+import { decodeJavaSerialized } from './javaSerialization.mjs';
+
 // Reading a Flowable process run from the engine's history tables, and turning it into what the run viewer draws.
 // Pure logic: the database is reached through a `run(sql)` function that returns the plain text the client printed, so the
 // same code works with `docker exec ... mysql|psql` and with a fake in the tests. Everything here is read-only (SELECT).
@@ -90,10 +92,14 @@ const isJavaSerialized = (bytes) => bytes.length > 2 && bytes[0] === JAVA_MAGIC[
 
 function decodeBlob(bytes) {
   if (isJavaSerialized(bytes)) {
-    const out = { _unreadable: 'Java-serialized value, cannot be decoded here' };
-    const strings = extractStrings(bytes);
-    if (strings.length) out._recovered_strings = strings;
-    return out;
+    try {
+      return decodeJavaSerialized(bytes);
+    } catch (e) {
+      const out = { _unreadable: `Java-serialized value that could not be decoded (${e.message})` };
+      const strings = extractStrings(bytes);
+      if (strings.length) out._recovered_strings = strings;
+      return out;
+    }
   }
   try {
     return new TextDecoder('utf-8', { fatal: true }).decode(bytes);

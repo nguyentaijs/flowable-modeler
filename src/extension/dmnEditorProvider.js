@@ -5,7 +5,7 @@ const { decisionKeys } = require('../core/dmnValidators.mjs');
 class DmnEditorProvider extends XmlEditorProvider {
   static viewType = 'flowable.dmnEditor';
   webviewName = 'dmn-webview';
-  bodyHtml = '<div id="error" hidden></div><div id="app"></div>';
+  bodyHtml = '<div id="error" hidden></div><div id="app"></div><a id="author-link" href="https://www.linkedin.com/in/nguyentaijs" title="Opens LinkedIn">Contact the author</a>';
 
   constructor(context, log, index) {
     super(context, log);

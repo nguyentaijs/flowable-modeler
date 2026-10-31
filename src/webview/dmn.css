@@ -88,3 +88,21 @@ td.num .grip { display: inline; padding: 0 4px 0 0; }
 .used-by-item { padding: 2px 0 0 12px; }
 .used-by a { color: var(--vscode-textLink-foreground); text-decoration: none; }
 .used-by a:hover { text-decoration: underline; }
+
+/* "Contact the author" link, bottom right corner of the editor */
+#author-link {
+  position: fixed;
+  right: 10px;
+  bottom: 6px;
+  z-index: 10;
+  padding: 1px 6px;
+  font-size: 11px;
+  border-radius: 3px;
+  color: var(--vscode-textLink-foreground, #3794ff);
+  background: var(--vscode-editor-background, transparent);
+  opacity: 0.8;
+}
+
+#author-link:hover {
+  opacity: 1;
+}
