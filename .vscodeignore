@@ -4,4 +4,6 @@
 !dist/*.css
 !README.md
 !CHANGELOG.md
+!LICENSE
+!icon.png
 !package.json

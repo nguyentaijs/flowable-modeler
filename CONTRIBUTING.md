@@ -21,7 +21,7 @@ Press **F5** to launch an Extension Development Host on the `samples/` folder. O
 
 Install a built package with `code --install-extension flowable-design-local-<version>.vsix` (or Extensions view → ... → Install from VSIX).
 
-Before publishing to the Marketplace set `publisher`, `repository`, `license` and an `icon` in `package.json` (and remove `"private": true`).
+Publishing: `npx vsce login nguyentaijs`, then `npx vsce publish` (add `--pre-release` for a pre-release).
 
 ## Where behaviour is configured
 

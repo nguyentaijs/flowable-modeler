@@ -3,11 +3,18 @@
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
   "version": "0.1.0",
-  "private": true,
-  "publisher": "local",
-  "license": "UNLICENSED",
-  "categories": ["Visualization", "Programming Languages"],
-  "keywords": ["flowable", "bpmn", "dmn", "workflow"],
+  "publisher": "nguyentaijs",
+  "license": "MIT",
+  "categories": [
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "flowable",
+    "bpmn",
+    "dmn",
+    "workflow"
+  ],
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -66,7 +73,10 @@
         },
         "flowableModeler.run.engine": {
           "type": "string",
-          "enum": ["mysql", "postgres"],
+          "enum": [
+            "mysql",
+            "postgres"
+          ],
           "default": "mysql",
           "description": "Database engine of the Flowable history that \"Visualize Latest Run\" reads."
         },
@@ -109,14 +119,31 @@
       }
     },
     "commands": [
-      { "command": "flowable.configureDatabase", "title": "Flowable: Configure Database Connection" },
-      { "command": "flowable.setDatabasePassword", "title": "Flowable: Set Database Password" },
-      { "command": "flowable.visualizeLatestRun", "title": "Flowable: Visualize Latest Run", "icon": "$(play-circle)" },
-      { "command": "flowable.visualizeRun", "title": "Flowable: Visualize a Run..." }
+      {
+        "command": "flowable.configureDatabase",
+        "title": "Flowable: Configure Database Connection"
+      },
+      {
+        "command": "flowable.setDatabasePassword",
+        "title": "Flowable: Set Database Password"
+      },
+      {
+        "command": "flowable.visualizeLatestRun",
+        "title": "Flowable: Visualize Latest Run",
+        "icon": "$(play-circle)"
+      },
+      {
+        "command": "flowable.visualizeRun",
+        "title": "Flowable: Visualize a Run..."
+      }
     ],
     "menus": {
       "editor/title": [
-        { "command": "flowable.visualizeLatestRun", "when": "resourceFilename =~ /\\.bpmn(20\\.xml)?$/", "group": "navigation" }
+        {
+          "command": "flowable.visualizeLatestRun",
+          "when": "resourceFilename =~ /\\.bpmn(20\\.xml)?$/",
+          "group": "navigation"
+        }
       ]
     }
   },
@@ -136,5 +163,14 @@
     "@vscode/vsce": "^3.0.0",
     "esbuild": "^0.28.2",
     "jsdom": "^29.1.1"
-  }
+  },
+  "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nguyentaijs/flowable-modeler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nguyentaijs/flowable-modeler/issues"
+  },
+  "homepage": "https://github.com/nguyentaijs/flowable-modeler#readme"
 }
