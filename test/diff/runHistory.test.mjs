@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   selectSql, inList, createDb, fetchRun, listRoots, parseTs, decodeVar, attachJsonTwins, parseDmnExecution, instanceOverlay,
-  outcomeOf, statusOf, bpmnFlows, bpmnProcessIds, clientCommand, extractStrings, RunError,
+  statusOf, bpmnFlows, bpmnProcessIds, clientCommand, extractStrings, RunError,
 } from '../../src/core/runHistory.mjs';
 
 const T = (s) => `2024-05-01 10:00:${s}`;
@@ -99,7 +99,6 @@ test('fetchRun: parent, called process, variables, DMN', async () => {
   assert.equal(main.children.callCore, 'p2');
   assert.equal(main.variables.tier, 'GOLD');
   assert.equal(main.variables.count, 3);
-  assert.deepEqual(outcomeOf(main), { from: 'decisionResult', outcome: 'APPROVED_WITH_OFFER', offerAttributes: null });
   assert.equal(statusOf(main), 'COMPLETED');
   assert.deepEqual(core.dmn[0].hitRules, [2]);
   assert.equal(core.dmn[0].key, 'sampleTierAssignment');

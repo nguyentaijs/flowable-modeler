@@ -2,7 +2,7 @@
   "name": "flowable-design-local",
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [

@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const {
-  listRoots, fetchRun, instanceOverlay, statusOf, outcomeOf, durationOf, iso, bpmnFlows, bpmnProcessIds, DEFAULTS,
+  listRoots, fetchRun, instanceOverlay, statusOf, durationOf, iso, bpmnFlows, bpmnProcessIds, DEFAULTS,
 } = require('../core/runHistory.mjs');
 const { openDb, databaseContainers } = require('./runDb.js');
 const { RunPanel } = require('./runPanel.js');
@@ -113,7 +113,7 @@ function registerRunCommands(context, index, log) {
       const file = files.get(inst.defKey);
       const base = {
         instanceId: inst.instanceId, parentInstanceId: inst.parentInstanceId, defKey: inst.defKey, defVersion: inst.defVersion,
-        status: statusOf(inst), start: iso(inst.startMs), durationMs: durationOf(inst), outcome: outcomeOf(inst), variables: inst.variables,
+        status: statusOf(inst), start: iso(inst.startMs), durationMs: durationOf(inst), variables: inst.variables,
         file: file ? vscode.workspace.asRelativePath(file.uri) : null,
         uri: file ? file.uri.toString() : null,
       };

@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 const { webviewHtml } = require('./webviewHtml.js');
 
-const BODY = '<div id="run-layout"><aside id="run-tree"></aside><main><div id="run-banner"></div><div id="error" hidden></div><div id="canvas"></div></main><aside id="run-detail" hidden></aside></div>';
+const BODY = '<div id="run-layout"><aside id="run-tree"></aside><main><div id="run-banner"></div><div id="error" hidden></div><div id="canvas"></div></main><div id="run-splitter" title="Drag to resize, double-click to reset" hidden></div><aside id="run-detail" hidden></aside></div>';
 
 // One webview showing a process run: the instance tree, the diagram of the chosen instance with the run drawn over it.
 class RunPanel {

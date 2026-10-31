@@ -45,6 +45,10 @@ main {
   background: var(--vscode-sideBar-background);
 }
 
+#run-tree[hidden] {
+  display: none;
+}
+
 #run-tree h3 {
   margin: 0;
   padding: 8px;
@@ -84,6 +88,12 @@ main {
   background: var(--vscode-editorWidget-background);
 }
 
+#author-link {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--vscode-textLink-foreground);
+}
+
 #run-banner .hint,
 .hint {
   opacity: 0.7;
@@ -113,14 +123,34 @@ button {
 
 #run-detail {
   flex: 0 0 380px;
+  min-width: 0;
+  box-sizing: border-box;
   overflow: auto;
   padding: 0 12px 12px;
   border-left: 1px solid var(--vscode-sideBar-border, #ccc);
   background: var(--vscode-sideBar-background);
 }
 
-#run-detail[hidden] {
+#run-detail[hidden],
+#run-splitter[hidden] {
   display: none;
+}
+
+#run-splitter {
+  flex: 0 0 5px;
+  cursor: col-resize;
+  background: var(--vscode-sideBar-border, #ccc);
+  touch-action: none;
+}
+
+#run-splitter:hover,
+body.resizing #run-splitter {
+  background: var(--vscode-focusBorder, #007fd4);
+}
+
+body.resizing {
+  user-select: none;
+  cursor: col-resize;
 }
 
 .detail-head {

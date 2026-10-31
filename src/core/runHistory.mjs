@@ -147,7 +147,7 @@ export function attachJsonTwins(variables) {
 
 const PROC_COLS = ['ID_', 'PROC_DEF_ID_', 'START_TIME_', 'END_TIME_', 'DURATION_', 'SUPER_PROCESS_INSTANCE_ID_', 'DELETE_REASON_', 'BUSINESS_KEY_'];
 const ACT_COLS = ['ACT_ID_', 'ACT_NAME_', 'ACT_TYPE_', 'PROC_INST_ID_', 'CALL_PROC_INST_ID_', 'START_TIME_', 'END_TIME_', 'DURATION_', 'DELETE_REASON_'];
-const VAR_COLS = ['NAME_', 'VAR_TYPE_', 'TEXT_', 'LONG_', 'DOUBLE_', 'BYTEARRAY_ID_', 'PROC_INST_ID_', 'EXECUTION_ID_'];
+const VAR_COLS = ['NAME_', 'VAR_TYPE_', 'TEXT_', 'LONG_', 'DOUBLE_', 'BYTEARRAY_ID_', 'PROC_INST_ID_', 'EXECUTION_ID_', 'CREATE_TIME_', 'LAST_UPDATED_TIME_'];
 const DMN_COLS = ['ID_', 'DECISION_DEFINITION_ID_', 'START_TIME_', 'END_TIME_', 'INSTANCE_ID_', 'ACTIVITY_ID_', 'FAILED_', 'EXECUTION_JSON_'];
 
 async function fetchDefs(db, defIds) {
@@ -234,6 +234,7 @@ function buildRun(rootId, order, procs, defs, acts, vars, blobs, dmnRows, dmnKey
       deleteReason: p.delete_reason_ ?? null,
       activities: [],
       variables: {},
+      varTimes: {},
       dmn: [],
       children: {},
     };
@@ -252,7 +253,11 @@ function buildRun(rootId, order, procs, defs, acts, vars, blobs, dmnRows, dmnKey
     }
     // process-scope variables win over execution-local ones with the same name
     const scoped = vars.filter((v) => v.proc_inst_id_ === pid).sort((a, b) => Number(a.execution_id_ === pid) - Number(b.execution_id_ === pid));
-    for (const v of scoped) inst.variables[v.name_] = decodeVar(v, blobs);
+    for (const v of scoped) {
+      inst.variables[v.name_] = decodeVar(v, blobs);
+      const createdMs = parseTs(v.create_time_);
+      inst.varTimes[v.name_] = { createdMs, updatedMs: parseTs(v.last_updated_time_) ?? createdMs };
+    }
     attachJsonTwins(inst.variables);
     for (const r of dmnRows) {
       if (r.instance_id_ !== pid) continue;
@@ -307,14 +312,6 @@ export function statusOf(inst) {
   return inst.endMs === null || inst.endMs === undefined ? 'RUNNING' : 'COMPLETED';
 }
 
-export function outcomeOf(inst) {
-  for (const name of ['decisionResult', 'bauDecisionResult', 'challengerDecisionResult']) {
-    const v = inst.variables[name];
-    if (v && typeof v === 'object' && v.outcome) return { from: name, outcome: v.outcome, offerAttributes: v.offerAttributes ?? null };
-  }
-  return null;
-}
-
 export const durationOf = (inst) => (inst.endMs && inst.startMs ? inst.endMs - inst.startMs : null);
 
 // Sequence flows are not in history. A flow counts as taken when both ends ran and the target started after the source did.
@@ -328,6 +325,19 @@ export function instanceOverlay(inst, flows, childPages = {}) {
     e.runs.push({ startMs: a.startMs, endMs: a.endMs, durationMs: dur });
     if (a.endMs === null || a.endMs === undefined) e.state = 'active';
     if (a.deleteReason && !a.deleteReason.includes('completed')) e.state = 'failed';
+  }
+  // History has no activity id on variables, so a script or service task's outputs are the variables written while it ran.
+  const times = Object.entries(inst.varTimes || {});
+  for (const [id, e] of Object.entries(activities)) {
+    if (e.type !== 'scriptTask' && e.type !== 'serviceTask') continue;
+    const names = new Set();
+    for (const r of e.runs) {
+      if (r.startMs == null || r.endMs == null) continue;
+      for (const [name, t] of times) {
+        if ([t.createdMs, t.updatedMs].some((ms) => ms != null && ms >= r.startMs && ms <= r.endMs)) names.add(name);
+      }
+    }
+    e.outputs = [...names].sort();
   }
   const dmn = {};
   for (const d of inst.dmn) {

@@ -1,6 +1,10 @@
 import NavigatedViewer from 'bpmn-js/lib/NavigatedViewer';
 import flowableRenderer from './flowableRenderer.js';
 import * as dmn from '../core/dmnModel.mjs';
+import { mountSplitter } from './splitter.js';
+import { scriptOutputNames } from '../core/scriptOutputs.mjs';
+import { callParameters } from '../core/callParameters.mjs';
+import { serviceTaskInfo } from '../core/serviceTask.mjs';
 
 const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
@@ -54,22 +58,33 @@ const statusClass = (status) => (status === 'COMPLETED' ? 'ok' : status === 'RUN
 
 // ---- banner
 
+let treeHidden = vscode.getState()?.treeHidden ?? false;
+
+function toggleTree() {
+  treeHidden = !treeHidden;
+  vscode.setState({ ...vscode.getState(), treeHidden });
+  $('run-tree').hidden = treeHidden;
+  $('tree-toggle').textContent = treeHidden ? '☰ Show instances' : '☰ Hide instances';
+  viewer.get('canvas').resized();
+}
+
 function renderBanner(inst) {
   const b = $('run-banner');
+  $('run-tree').hidden = treeHidden;
+  const toggle = button(treeHidden ? '☰ Show instances' : '☰ Hide instances', toggleTree);
+  toggle.id = 'tree-toggle';
   b.replaceChildren(
+    toggle,
     el('span', { className: 'chip ' + statusClass(inst.status), textContent: inst.status }),
     el('b', { textContent: inst.defKey || '' }),
     el('code', { textContent: inst.instanceId }),
     el('span', { textContent: `${inst.start || '-'} · ${fmtMs(inst.durationMs)}` }),
   );
-  if (inst.outcome) {
-    const o = inst.outcome.outcome;
-    b.append(el('span', { className: 'chip ' + (/^APPROVED/.test(o) ? 'ok' : /^DECLINED/.test(o) ? 'bad' : 'wait'), textContent: o }), el('span', { textContent: `(${inst.outcome.from})` }));
-  }
   if (inst.parentInstanceId && data.instances[inst.parentInstanceId]) b.append(button('↑ parent run', () => open(inst.parentInstanceId)));
   b.append(button('Variables', () => showVariables(inst)));
   if (inst.uri) b.append(button('Open model', () => vscode.postMessage({ type: 'openFile', uri: inst.uri })));
   b.append(el('span', { className: 'hint', textContent: 'flows are inferred from executed steps' }));
+  b.append(el('a', { id: 'author-link', href: 'https://www.linkedin.com/in/nguyentaijs', title: 'Opens LinkedIn', textContent: 'Contact the author' }));
 }
 
 function button(text, onClick) {
@@ -139,10 +154,22 @@ function openDetail(title, ...content) {
   const d = $('run-detail');
   d.replaceChildren(el('div', { className: 'detail-head' }, el('b', { textContent: title }), button('×', closeDetail)), ...content);
   d.hidden = false;
+  $('run-splitter').hidden = false;
 }
 function closeDetail() {
   $('run-detail').hidden = true;
+  $('run-splitter').hidden = true;
 }
+
+mountSplitter({
+  splitter: $('run-splitter'),
+  panel: $('run-detail'),
+  layout: $('run-layout'),
+  vscode,
+  defaultWidth: 380,
+  key: 'detailWidth',
+  onResize: () => viewer.get('canvas').resized(),
+});
 
 function table(head, rows) {
   const t = el('table', { className: 'run-table' }, el('thead', {}, el('tr', {}, ...head.map((h) => el('th', { textContent: h })))));
@@ -171,7 +198,58 @@ function showElement(inst, element) {
   }
   const d = run.dmn[element.id];
   if (d) nodes.push(...dmnNodes(d));
+  const bo = element.businessObject;
+  if (bo && bo.$type === 'bpmn:CallActivity') nodes.push(...callNodes(inst, bo, child));
+  if (bo && bo.$type === 'bpmn:ServiceTask' && !d) nodes.push(...serviceNodes(inst, bo, a));
+  if (bo && bo.$type === 'bpmn:ScriptTask') {
+    const declared = scriptOutputNames(bo.script, bo.$attrs && bo.$attrs['flowable:resultVariable']);
+    const names = [...new Set([...(a.outputs || []), ...declared])].sort();
+    nodes.push(el('h4', { textContent: 'Output variables (final values)' }));
+    nodes.push(names.length ? table(['name', 'value'], varRows(inst.variables, names)) : el('p', { className: 'hint', textContent: 'No output variables found for this script task.' }));
+  }
   openDetail((element.businessObject && element.businessObject.name) || element.id, ...nodes);
+}
+
+// Parameters declared on the call activity, with the value each ended up with: inputs as the called process holds
+// them, outputs as the calling process holds them (final values; history keeps no earlier ones).
+function callNodes(inst, bo, child) {
+  const params = callParameters(bo.extensionElements && bo.extensionElements.values);
+  const calledVars = (child && data.instances[child.instanceId] && data.instances[child.instanceId].variables) || null;
+  const from = (p) => p.sourceExpression || p.source || '';
+  const to = (p) => p.targetExpression || p.target || '';
+  const value = (vars, name) => {
+    if (!vars || !name) return el('td', { className: 'hint', textContent: 'n/a' });
+    if (!(name in vars)) return el('td', { className: 'hint', textContent: '(not stored)' });
+    const v = vars[name];
+    return el('td', {}, pre(typeof v === 'object' ? v : String(v)));
+  };
+  const section = (title, list, vars, nameOf) =>
+    list.length
+      ? [el('h4', { textContent: title }), table(['from', 'to', 'value'], list.map((p) => el('tr', {}, el('td', { textContent: from(p) }), el('td', { textContent: to(p) }), value(vars, nameOf(p)))))]
+      : [];
+  const nodes = [
+    ...section('Input parameters (value in the called process)', params.in, calledVars, (p) => p.target),
+    ...section('Output parameters (value in this process)', params.out, inst.variables, (p) => p.target),
+  ];
+  const inherit = bo.$attrs && bo.$attrs['flowable:inheritVariables'];
+  if (inherit === 'true') nodes.push(el('p', { className: 'hint', textContent: 'inheritVariables is on: all variables of this process were copied into the called process.' }));
+  if (!nodes.length) nodes.push(el('p', { className: 'hint', textContent: 'This call activity declares no in or out parameters.' }));
+  return nodes;
+}
+
+// Outputs when they can be found (resultVariable, or variables written while the task ran); otherwise the inputs the
+// task was configured with, so there is still something to read.
+function serviceNodes(inst, bo, a) {
+  const info = serviceTaskInfo(bo);
+  const names = [...new Set([...(a.outputs || []), ...(info.resultVariable ? [info.resultVariable] : [])])].sort();
+  if (names.length) return [el('h4', { textContent: 'Output variables (final values)' }), table(['name', 'value'], varRows(inst.variables, names))];
+  const nodes = [el('h4', { textContent: 'No output variable found. Inputs:' })];
+  if (info.implementation) nodes.push(el('p', {}, `${info.implementation.kind}: `, el('code', { textContent: info.implementation.value })));
+  if (info.fields.length) {
+    nodes.push(table(['field', 'type', 'value'], info.fields.map((f) => el('tr', {}, el('td', { textContent: f.name || '' }), el('td', { textContent: f.kind }), el('td', {}, pre(f.value))))));
+  }
+  if (!info.implementation && !info.fields.length) nodes.push(el('p', { className: 'hint', textContent: 'This service task declares no implementation or fields.' }));
+  return nodes;
 }
 
 function dmnNodes(d) {
@@ -208,12 +286,16 @@ function decisionTable(xml, key, hits) {
   return el('div', { className: 'detail-table' }, el('small', { textContent: `Hit policy ${tbl.getAttribute('hitPolicy') || 'UNIQUE'}` }), table(head, rows));
 }
 
-function showVariables(inst) {
-  const rows = Object.keys(inst.variables).sort().map((k) => {
-    const v = inst.variables[k];
+function varRows(variables, names) {
+  return names.map((k) => {
+    if (!(k in variables)) return el('tr', {}, el('td', { textContent: k }), el('td', { className: 'hint', textContent: '(not stored)' }));
+    const v = variables[k];
     return el('tr', {}, el('td', { textContent: k }), el('td', {}, pre(typeof v === 'object' ? v : String(v))));
   });
-  openDetail('Process variables (final values)', table(['name', 'value'], rows));
+}
+
+function showVariables(inst) {
+  openDetail('Process variables (final values)', table(['name', 'value'], varRows(inst.variables, Object.keys(inst.variables).sort())));
 }
 
 window.addEventListener('message', (event) => {

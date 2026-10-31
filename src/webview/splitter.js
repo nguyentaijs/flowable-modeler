@@ -1,16 +1,16 @@
 // Drag handle between the canvas and the properties panel. The width is clamped, restored from the webview
 // state, and reset with a double click.
 const MIN = 200;
-const DEFAULT = 320;
 
-export function mountSplitter({ splitter, panel, layout, vscode, onResize }) {
+export function mountSplitter({ splitter, panel, layout, vscode, onResize, defaultWidth = 320, key = 'panelWidth' }) {
+  const DEFAULT = defaultWidth;
   const clamp = (w) => Math.max(MIN, Math.min(w, layout.clientWidth - 200));
   const apply = (w) => {
     panel.style.flexBasis = clamp(w) + 'px';
     onResize?.();
   };
 
-  apply(vscode.getState()?.panelWidth ?? DEFAULT);
+  apply(vscode.getState()?.[key] ?? DEFAULT);
 
   splitter.addEventListener('pointerdown', (down) => {
     splitter.setPointerCapture(down.pointerId);
@@ -21,7 +21,7 @@ export function mountSplitter({ splitter, panel, layout, vscode, onResize }) {
       splitter.removeEventListener('pointermove', move);
       splitter.removeEventListener('pointerup', up);
       document.body.classList.remove('resizing');
-      vscode.setState({ ...vscode.getState(), panelWidth: parseInt(panel.style.flexBasis, 10) });
+      vscode.setState({ ...vscode.getState(), [key]: parseInt(panel.style.flexBasis, 10) });
     };
     splitter.addEventListener('pointermove', move);
     splitter.addEventListener('pointerup', up);
@@ -29,7 +29,7 @@ export function mountSplitter({ splitter, panel, layout, vscode, onResize }) {
 
   splitter.addEventListener('dblclick', () => {
     apply(DEFAULT);
-    vscode.setState({ ...vscode.getState(), panelWidth: DEFAULT });
+    vscode.setState({ ...vscode.getState(), [key]: DEFAULT });
   });
 
   window.addEventListener('resize', () => apply(parseInt(panel.style.flexBasis, 10) || DEFAULT));
