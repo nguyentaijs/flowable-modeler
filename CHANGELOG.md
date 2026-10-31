@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+- Run view: a service task field that is an expression such as `${applicationData.profileId}` shows the value it comes to (final variable values; plain variable paths only), with the expression underneath. Each value has a Copy button.
+
 ## 0.1.3
 - Run view: connect straight to a MySQL or PostgreSQL database by host and port (settings `flowableModeler.run.host` and `run.port`), no Docker needed. Connections are read-only; the drivers are bundled.
 - Run view: variables, call activity parameters and service task fields are shown one table per item (name as header, value below).

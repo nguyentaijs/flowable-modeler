@@ -177,6 +177,28 @@ body.resizing {
   background: var(--vscode-textCodeBlock-background);
 }
 
+.value-box {
+  position: relative;
+}
+
+#run-detail .value-box pre {
+  padding-right: 54px; /* room for the Copy button */
+}
+
+.copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  padding: 0 6px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.value-box:hover .copy-btn,
+.copy-btn:focus {
+  opacity: 1;
+}
+
 .detail-table {
   overflow-x: auto;
 }

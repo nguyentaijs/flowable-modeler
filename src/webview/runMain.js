@@ -5,6 +5,7 @@ import { mountSplitter } from './splitter.js';
 import { scriptOutputNames } from '../core/scriptOutputs.mjs';
 import { callParameters } from '../core/callParameters.mjs';
 import { serviceTaskInfo } from '../core/serviceTask.mjs';
+import { resolveExpression } from '../core/expressionValue.mjs';
 
 const vscode = acquireVsCodeApi();
 const $ = (id) => document.getElementById(id);
@@ -176,7 +177,37 @@ function table(head, rows) {
   t.append(el('tbody', {}, ...rows));
   return t;
 }
-const pre = (v) => el('pre', { textContent: typeof v === 'string' ? v : json(v) });
+
+// Falls back to a hidden textarea where the async clipboard API is not allowed in the webview.
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return;
+  } catch {
+    /* use the fallback */
+  }
+  const area = el('textarea', { value: text });
+  area.style.position = 'fixed';
+  area.style.opacity = '0';
+  document.body.append(area);
+  area.select();
+  document.execCommand('copy');
+  area.remove();
+}
+
+// A value, with a button that copies exactly the text shown.
+function pre(v) {
+  const text = typeof v === 'string' ? v : json(v);
+  const copy = button('Copy', () => {
+    copyText(text).then(() => {
+      copy.textContent = 'Copied';
+      setTimeout(() => (copy.textContent = 'Copy'), 1200);
+    });
+  });
+  copy.className = 'copy-btn';
+  copy.title = 'Copy this value';
+  return el('div', { className: 'value-box' }, el('pre', { textContent: text }), copy);
+}
 
 function showElement(inst, element) {
   const run = inst.overlay;
@@ -236,6 +267,17 @@ function callNodes(inst, bo, child) {
   return nodes;
 }
 
+// A field whose value is an expression shows what it comes to, with the expression itself underneath.
+function fieldTable(f, variables) {
+  const isExpr = f.kind === 'expression' || /[$#]{/.test(f.value);
+  const header = `${f.name || ''}${isExpr ? ' (expression)' : ''}`;
+  if (!isExpr) return table([header], [el('tr', {}, el('td', {}, pre(f.value)))]);
+  const r = resolveExpression(f.value, variables);
+  const note = r.resolved ? `from ${f.value}` : r.reason === 'not found' ? `no value for ${f.value}` : 'cannot resolve here (only plain variable paths)';
+  const body = r.resolved ? pre(typeof r.value === 'object' && r.value !== null ? r.value : String(r.value)) : pre(f.value);
+  return table([header], [el('tr', {}, el('td', {}, body, el('small', { className: 'hint', textContent: note })))]);
+}
+
 // Outputs when they can be found (resultVariable, or variables written while the task ran); otherwise the inputs the
 // task was configured with, so there is still something to read.
 function serviceNodes(inst, bo, a) {
@@ -246,7 +288,8 @@ function serviceNodes(inst, bo, a) {
   if (info.implementation) nodes.push(el('p', {}, `${info.implementation.kind}: `, el('code', { textContent: info.implementation.value })));
   if (info.fields.length) {
     // one table per field: the name is the header (marked when it is an expression), the value follows
-    nodes.push(...info.fields.map((f) => table([`${f.name || ''}${f.kind === 'expression' ? ' (expression)' : ''}`], [el('tr', {}, el('td', {}, pre(f.value)))])));
+    nodes.push(...info.fields.map((f) => fieldTable(f, inst.variables)));
+    nodes.push(el('p', { className: 'hint', textContent: "Values are worked out from the variables' final values, which may differ from what the task saw." }));
   }
   if (!info.implementation && !info.fields.length) nodes.push(el('p', { className: 'hint', textContent: 'This service task declares no implementation or fields.' }));
   return nodes;
