@@ -15,7 +15,7 @@ function registerRunCommands(context, index, log) {
   // Fills in the container when none is configured: the only running database container, or a pick.
   async function ensureContainer() {
     const config = cfg();
-    if (config.get('container') || config.get('dbCommand')) return true;
+    if (config.get('host') || config.get('container') || config.get('dbCommand')) return true;
     let found;
     try {
       found = await databaseContainers(config.get('dockerPath'));
@@ -46,27 +46,48 @@ function registerRunCommands(context, index, log) {
 
   async function configure() {
     const config = cfg();
-    const engine = await vscode.window.showQuickPick(['mysql', 'postgres'], { placeHolder: 'Database engine', title: 'Flowable database (1/4)' });
+    const title = 'Flowable database';
+    const engine = await vscode.window.showQuickPick(['mysql', 'postgres'], { placeHolder: 'Database engine', title });
     if (!engine) return;
+    const how = await vscode.window.showQuickPick(
+      [
+        { label: 'Direct connection', description: 'host and port, no Docker', direct: true },
+        { label: 'Docker container', description: 'docker exec into a running database container', direct: false },
+      ],
+      { placeHolder: 'How is the database reached?', title },
+    );
+    if (!how) return;
+    let host = '';
+    let port = 0;
     let container = config.get('container');
-    try {
-      const found = (await databaseContainers(config.get('dockerPath'))).filter((f) => f.engine === engine);
-      if (found.length) {
-        const pick = await vscode.window.showQuickPick(found.map((f) => ({ label: f.name, description: f.image })), { placeHolder: 'Running database container', title: 'Flowable database (2/4)' });
-        if (pick) container = pick.label;
+    if (how.direct) {
+      host = await vscode.window.showInputBox({ prompt: 'Database host', value: config.get('host') || 'localhost', title, ignoreFocusOut: true });
+      if (!host) return;
+      const text = await vscode.window.showInputBox({ prompt: 'Database port', value: String(config.get('port') || (engine === 'postgres' ? 5432 : 3306)), title, ignoreFocusOut: true, validateInput: (v) => (/^d{1,5}$/.test(v) ? null : 'A port number') });
+      if (text === undefined) return;
+      port = Number(text);
+    } else {
+      try {
+        const found = (await databaseContainers(config.get('dockerPath'))).filter((f) => f.engine === engine);
+        if (found.length) {
+          const pick = await vscode.window.showQuickPick(found.map((f) => ({ label: f.name, description: f.image })), { placeHolder: 'Running database container', title });
+          if (pick) container = pick.label;
+        }
+      } catch {
+        /* docker not reachable: ask by hand below */
       }
-    } catch {
-      /* docker not reachable: ask by hand below */
+      container = await vscode.window.showInputBox({ prompt: 'Docker container name', value: container, title, ignoreFocusOut: true });
+      if (container === undefined) return;
     }
-    container = await vscode.window.showInputBox({ prompt: 'Docker container name', value: container, title: 'Flowable database (2/4)', ignoreFocusOut: true });
-    if (container === undefined) return;
-    const user = await vscode.window.showInputBox({ prompt: 'Database user', value: config.get('dbUser') || DEFAULTS.user, title: 'Flowable database (3/4)', ignoreFocusOut: true });
+    const user = await vscode.window.showInputBox({ prompt: 'Database user', value: config.get('dbUser') || DEFAULTS.user, title, ignoreFocusOut: true });
     if (user === undefined) return;
-    const name = await vscode.window.showInputBox({ prompt: 'Database name', value: config.get('dbName') || DEFAULTS.database, title: 'Flowable database (4/4)', ignoreFocusOut: true });
+    const name = await vscode.window.showInputBox({ prompt: 'Database name', value: config.get('dbName') || DEFAULTS.database, title, ignoreFocusOut: true });
     if (name === undefined) return;
     const target = vscode.ConfigurationTarget.Global;
     await config.update('engine', engine, target);
-    await config.update('container', container, target);
+    await config.update('host', host, target);
+    await config.update('port', port, target);
+    if (!how.direct) await config.update('container', container, target);
     await config.update('dbUser', user, target);
     await config.update('dbName', name, target);
     if (!(await context.secrets.get(PASSWORD_KEY))) await setPassword();

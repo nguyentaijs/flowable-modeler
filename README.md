@@ -7,7 +7,7 @@ Built for files exported by Flowable Design: it uses JUEL expressions (not FEEL)
 ## Requirements
 
 - VS Code 1.90 or newer.
-- Run visualization only: the **Docker CLI**, and a Flowable history database (MySQL by default, or PostgreSQL) running in a Docker container. DMN rule hits need DMN history to be enabled.
+- Run visualization only: a Flowable history database (MySQL by default, or PostgreSQL), reached either directly by host and port, or through a Docker container (needs the **Docker CLI**). DMN rule hits need DMN history to be enabled.
 - Everything else works without Docker or a database.
 
 ## Features
@@ -16,7 +16,7 @@ Built for files exported by Flowable Design: it uses JUEL expressions (not FEEL)
 - **DMN editor** for `*.dmn`: a decision table grid with hit policy, aggregation, input and output columns, allowed values and rules. Add, remove and drag to reorder rules and columns. Cells are written as CDATA. Each decision shows a **Used by** list of the BPMN files that refer to it.
 - **Diagnostics**: problems for BPMN and DMN files appear in the Problems panel as you type (see [Validators](#validators)).
 - **Navigation**: **Open ↗** on a DMN task opens its decision. **Ctrl+Click** or **F12** on a `decisionTableReferenceKey` in the XML does the same. A reference that matches no decision in the workspace gets a warning.
-- **Run visualization**: draws the latest process run from your Flowable database on its diagram. It shows an instance tree (called processes included), executed, running, failed and skipped steps, loop counts and durations, the final variables, and for DMN tasks the inputs, the result and the matched rule rows. It only reads the history tables, through `docker exec`, and never writes to the database.
+- **Run visualization**: draws the latest process run from your Flowable database on its diagram. It shows an instance tree (called processes included), executed, running, failed and skipped steps, loop counts and durations, the final variables, and for DMN tasks the inputs, the result and the matched rule rows. It only reads the history tables, over a direct connection or through `docker exec`, and never writes to the database.
 - **Minimal diffs**: the editor compares its output with the file element by element and applies only the differences as text edits. Comments, CDATA, ordering and `design:*` content you didn't touch stay exactly as they were. VS Code's undo, redo, save and git diff work as usual.
 
 ## Commands
@@ -25,7 +25,7 @@ Open the Command Palette (Ctrl+Shift+P) and type "Flowable".
 
 | Command | What it does |
 |---|---|
-| **Flowable: Configure Database Connection** | Asks for engine, container, user and database name (container names are suggested from `docker ps`), saves them to settings, then tests the connection |
+| **Flowable: Configure Database Connection** | Asks for engine, then a direct connection (host and port) or a Docker container (names suggested from `docker ps`), user and database name, saves them to settings, then tests the connection |
 | **Flowable: Set Database Password** | Stores the password in VS Code's secret storage; leave it empty to go back to the default `flowable` |
 | **Flowable: Visualize Latest Run** | Opens the newest process run. Also a button in the title bar of `.bpmn` editors |
 | **Flowable: Visualize a Run...** | Lists recent runs and opens the one you pick |
@@ -37,7 +37,9 @@ Open the Command Palette (Ctrl+Shift+P) and type "Flowable".
 | `flowableModeler.disabledValidators` | array of strings | `[]` | Names of validators to switch off, for example `["juel-syntax", "dmn-reference"]` |
 | `flowableModeler.passThroughNamespaces` | array of strings | `["design"]` | XML namespace prefixes that are kept as-is and never reported |
 | `flowableModeler.run.engine` | `mysql` \| `postgres` | `mysql` | Database engine of the Flowable history |
-| `flowableModeler.run.container` | string | `""` | Docker container running the database. Empty: the running database container is detected, and remembered |
+| `flowableModeler.run.host` | string | `""` | Database host for a direct connection (no Docker). When set, container and Docker CLI settings are ignored |
+| `flowableModeler.run.port` | number | `0` | Port for a direct connection. 0: 3306 for MySQL, 5432 for PostgreSQL |
+| `flowableModeler.run.container` | string | `""` | Docker container running the database (when no host is set). Empty: the running database container is detected, and remembered |
 | `flowableModeler.run.dbUser` | string | `flowable` | Database user |
 | `flowableModeler.run.dbName` | string | `flowable` | Database name |
 | `flowableModeler.run.dockerPath` | string | `docker` | Docker CLI to run |

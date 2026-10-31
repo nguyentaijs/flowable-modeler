@@ -205,7 +205,7 @@ function showElement(inst, element) {
     const declared = scriptOutputNames(bo.script, bo.$attrs && bo.$attrs['flowable:resultVariable']);
     const names = [...new Set([...(a.outputs || []), ...declared])].sort();
     nodes.push(el('h4', { textContent: 'Output variables (final values)' }));
-    nodes.push(names.length ? table(['name', 'value'], varRows(inst.variables, names)) : el('p', { className: 'hint', textContent: 'No output variables found for this script task.' }));
+    nodes.push(...(names.length ? varTables(inst.variables, names) : [el('p', { className: 'hint', textContent: 'No output variables found for this script task.' })]));
   }
   openDetail((element.businessObject && element.businessObject.name) || element.id, ...nodes);
 }
@@ -218,15 +218,14 @@ function callNodes(inst, bo, child) {
   const from = (p) => p.sourceExpression || p.source || '';
   const to = (p) => p.targetExpression || p.target || '';
   const value = (vars, name) => {
-    if (!vars || !name) return el('td', { className: 'hint', textContent: 'n/a' });
-    if (!(name in vars)) return el('td', { className: 'hint', textContent: '(not stored)' });
+    if (!vars || !name) return el('span', { className: 'hint', textContent: 'n/a' });
+    if (!(name in vars)) return el('span', { className: 'hint', textContent: '(not stored)' });
     const v = vars[name];
-    return el('td', {}, pre(typeof v === 'object' ? v : String(v)));
+    return pre(typeof v === 'object' ? v : String(v));
   };
+  // one table per parameter: "from -> to" is the header, the value follows
   const section = (title, list, vars, nameOf) =>
-    list.length
-      ? [el('h4', { textContent: title }), table(['from', 'to', 'value'], list.map((p) => el('tr', {}, el('td', { textContent: from(p) }), el('td', { textContent: to(p) }), value(vars, nameOf(p)))))]
-      : [];
+    list.length ? [el('h4', { textContent: title }), ...list.map((p) => table([`${from(p)} -> ${to(p)}`], [el('tr', {}, el('td', {}, value(vars, nameOf(p))))]))] : [];
   const nodes = [
     ...section('Input parameters (value in the called process)', params.in, calledVars, (p) => p.target),
     ...section('Output parameters (value in this process)', params.out, inst.variables, (p) => p.target),
@@ -242,11 +241,12 @@ function callNodes(inst, bo, child) {
 function serviceNodes(inst, bo, a) {
   const info = serviceTaskInfo(bo);
   const names = [...new Set([...(a.outputs || []), ...(info.resultVariable ? [info.resultVariable] : [])])].sort();
-  if (names.length) return [el('h4', { textContent: 'Output variables (final values)' }), table(['name', 'value'], varRows(inst.variables, names))];
+  if (names.length) return [el('h4', { textContent: 'Output variables (final values)' }), ...varTables(inst.variables, names)];
   const nodes = [el('h4', { textContent: 'No output variable found. Inputs:' })];
   if (info.implementation) nodes.push(el('p', {}, `${info.implementation.kind}: `, el('code', { textContent: info.implementation.value })));
   if (info.fields.length) {
-    nodes.push(table(['field', 'type', 'value'], info.fields.map((f) => el('tr', {}, el('td', { textContent: f.name || '' }), el('td', { textContent: f.kind }), el('td', {}, pre(f.value))))));
+    // one table per field: the name is the header (marked when it is an expression), the value follows
+    nodes.push(...info.fields.map((f) => table([`${f.name || ''}${f.kind === 'expression' ? ' (expression)' : ''}`], [el('tr', {}, el('td', {}, pre(f.value)))])));
   }
   if (!info.implementation && !info.fields.length) nodes.push(el('p', { className: 'hint', textContent: 'This service task declares no implementation or fields.' }));
   return nodes;
@@ -286,16 +286,16 @@ function decisionTable(xml, key, hits) {
   return el('div', { className: 'detail-table' }, el('small', { textContent: `Hit policy ${tbl.getAttribute('hitPolicy') || 'UNIQUE'}` }), table(head, rows));
 }
 
-function varRows(variables, names) {
+// One table per variable: the name is the header, the value is the body.
+function varTables(variables, names) {
   return names.map((k) => {
-    if (!(k in variables)) return el('tr', {}, el('td', { textContent: k }), el('td', { className: 'hint', textContent: '(not stored)' }));
-    const v = variables[k];
-    return el('tr', {}, el('td', { textContent: k }), el('td', {}, pre(typeof v === 'object' ? v : String(v))));
+    const body = !(k in variables) ? el('span', { className: 'hint', textContent: '(not stored)' }) : pre(typeof variables[k] === 'object' ? variables[k] : String(variables[k]));
+    return table([k], [el('tr', {}, el('td', {}, body))]);
   });
 }
 
 function showVariables(inst) {
-  openDetail('Process variables (final values)', table(['name', 'value'], varRows(inst.variables, Object.keys(inst.variables).sort())));
+  openDetail('Process variables (final values)', ...varTables(inst.variables, Object.keys(inst.variables).sort()));
 }
 
 window.addEventListener('message', (event) => {

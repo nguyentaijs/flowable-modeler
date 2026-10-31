@@ -2,7 +2,7 @@
   "name": "flowable-design-local",
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [
@@ -80,10 +80,20 @@
           "default": "mysql",
           "description": "Database engine of the Flowable history that \"Visualize Latest Run\" reads."
         },
+        "flowableModeler.run.host": {
+          "type": "string",
+          "default": "",
+          "description": "Database host for a direct connection (no Docker). When set, the extension connects to host:port itself and ignores the container and Docker CLI settings. Empty: use the Docker container."
+        },
+        "flowableModeler.run.port": {
+          "type": "number",
+          "default": 0,
+          "description": "Database port for a direct connection. 0: the engine's default (3306 for MySQL, 5432 for PostgreSQL)."
+        },
         "flowableModeler.run.container": {
           "type": "string",
           "default": "",
-          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered."
+          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered. Not used when a host is set."
         },
         "flowableModeler.run.dbUser": {
           "type": "string",
@@ -156,7 +166,9 @@
   },
   "dependencies": {
     "bpmn-js": "^18.31.1",
-    "bpmn-moddle": "^9.0.4"
+    "bpmn-moddle": "^9.0.4",
+    "mysql2": "^3.24.6",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/vscode": "1.90.0",

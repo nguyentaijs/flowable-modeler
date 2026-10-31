@@ -182,8 +182,17 @@ body.resizing {
 }
 
 .run-table {
+  width: 100%; /* follow the width of the detail panel as it is dragged */
   border-collapse: collapse;
   font-size: 12px;
+}
+
+.run-table td {
+  overflow-wrap: anywhere;
+}
+
+.run-table + .run-table {
+  margin-top: 8px;
 }
 
 .run-table th,

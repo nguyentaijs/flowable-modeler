@@ -11,7 +11,7 @@ const targets = [
     outfile: 'dist/extension.cjs',
     platform: 'node',
     format: 'cjs',
-    external: ['vscode'],
+    external: ['vscode', 'pg-native'], // pg-native is an optional add-on of pg
   },
   {
     ...common,

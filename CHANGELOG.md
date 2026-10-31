@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+- Run view: connect straight to a MySQL or PostgreSQL database by host and port (settings `flowableModeler.run.host` and `run.port`), no Docker needed. Connections are read-only; the drivers are bundled.
+- Run view: variables, call activity parameters and service task fields are shown one table per item (name as header, value below).
+
 ## 0.1.2
 - Run view: removed the outcome tag from the banner (it was specific to one decision model); "Contact the author" link added to the banner.
 - README shortened to requirements, features, commands, settings, validators, contact and contributing.
