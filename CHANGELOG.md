@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+- An empty .bpmn or .dmn file is filled with a starting model when it is opened: only the essential Flowable namespaces and attributes (taken from the engine's own converters), one process with a start event, or one decision table. The file name gives the id.
+- Commands "Flowable: New BPMN File" and "Flowable: New DMN File" (also in the Explorer folder menu): ask for a name, create the file with the starting model and open it in the visual editor.
+
 ## 0.1.4
 - Run view: a service task field that is an expression such as `${applicationData.profileId}` shows the value it comes to (final variable values; plain variable paths only), with the expression underneath. Each value has a Copy button.
 

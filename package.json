@@ -2,7 +2,7 @@
   "name": "flowable-design-local",
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [
@@ -130,6 +130,14 @@
     },
     "commands": [
       {
+        "command": "flowable.newBpmn",
+        "title": "Flowable: New BPMN File"
+      },
+      {
+        "command": "flowable.newDmn",
+        "title": "Flowable: New DMN File"
+      },
+      {
         "command": "flowable.configureDatabase",
         "title": "Flowable: Configure Database Connection"
       },
@@ -148,6 +156,18 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "flowable.newBpmn",
+          "when": "explorerResourceIsFolder",
+          "group": "2_workspace@10"
+        },
+        {
+          "command": "flowable.newDmn",
+          "when": "explorerResourceIsFolder",
+          "group": "2_workspace@11"
+        }
+      ],
       "editor/title": [
         {
           "command": "flowable.visualizeLatestRun",

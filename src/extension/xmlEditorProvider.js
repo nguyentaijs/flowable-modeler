@@ -33,7 +33,17 @@ class XmlEditorProvider {
     let queue = Promise.resolve();
     const log = (m) => this.log.appendLine(`[${new Date().toISOString()}] ${m}`);
 
-    const send = () => {
+    const send = async () => {
+      // An empty file cannot be opened as a model: start it with the subclass's template (one undoable edit).
+      const starter = document.getText().trim() === '' ? this.emptyTemplate?.(document) : null;
+      if (starter) {
+        const we = new vscode.WorkspaceEdit();
+        we.replace(document.uri, new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), starter);
+        applying = true;
+        const ok = await vscode.workspace.applyEdit(we);
+        applying = false;
+        log(`empty file: inserted the starting model -> ${ok}`);
+      }
       shownText = document.getText();
       log(`load -> webview (${shownText.length} chars)`);
       return panel.webview.postMessage({ type: 'load', xml: shownText });

@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const { XmlEditorProvider } = require('./xmlEditorProvider.js');
 const { decisionKeys } = require('../core/dmnValidators.mjs');
+const { newDmn } = require('../core/templates.mjs');
 
 class DmnEditorProvider extends XmlEditorProvider {
   static viewType = 'flowable.dmnEditor';
@@ -10,6 +11,10 @@ class DmnEditorProvider extends XmlEditorProvider {
   constructor(context, log, index) {
     super(context, log);
     this.index = index;
+  }
+
+  emptyTemplate(document) {
+    return newDmn(document.uri.path);
   }
 
   // "Used by": the DMN tasks of the workspace's .bpmn files that refer to each decision of this document.

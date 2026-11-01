@@ -1,5 +1,6 @@
 const { XmlEditorProvider } = require('./xmlEditorProvider.js');
 const { openDecision } = require('./decisionNavigation.js');
+const { newBpmn } = require('../core/templates.mjs');
 
 class BpmnEditorProvider extends XmlEditorProvider {
   static viewType = 'flowable.bpmnEditor';
@@ -9,6 +10,10 @@ class BpmnEditorProvider extends XmlEditorProvider {
   constructor(context, log, index) {
     super(context, log);
     this.index = index;
+  }
+
+  emptyTemplate(document) {
+    return newBpmn(document.uri.path);
   }
 
   // "Open decision" in the properties panel of a DMN task

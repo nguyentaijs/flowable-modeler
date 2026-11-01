@@ -5,11 +5,13 @@ const { registerDiagnostics } = require('./diagnostics.js');
 const { DecisionIndex } = require('./decisionIndex.js');
 const { registerDecisionNavigation } = require('./decisionNavigation.js');
 const { registerRunCommands } = require('./runCommands.js');
+const { registerNewFileCommands } = require('./newFileCommands.js');
 
 function activate(context) {
   const index = new DecisionIndex(context);
   registerDiagnostics(context, index);
   registerDecisionNavigation(context, index);
+  registerNewFileCommands(context);
   const channel = vscode.window.createOutputChannel('Flowable Modeler');
   context.subscriptions.push(channel);
   registerRunCommands(context, index, (m) => channel.appendLine(`[${new Date().toISOString()}] ${m}`));
