@@ -5,10 +5,10 @@ const BPMN = [{ pattern: '**/*.bpmn' }, { pattern: '**/*.bpmn20.xml' }];
 const COMMAND = 'flowable.openDecision';
 
 // Opens the .dmn file that defines `key` in the DMN editor. With several matches the user picks one.
-async function openDecision(index, key) {
-  const found = index.find(key);
+async function openDecision(index, key, bpmnUri) {
+  const found = index.find(key, bpmnUri);
   if (!found.length) {
-    vscode.window.showWarningMessage(index.ready ? `No decision with id "${key}" was found in the .dmn files of this workspace.` : 'Still scanning the workspace for .dmn files, try again in a moment.');
+    vscode.window.showWarningMessage(index.ready ? `No decision with id "${key}" was found in the .dmn files ${index.describeScope(bpmnUri)}.` : 'Still scanning the workspace for .dmn files, try again in a moment.');
     return;
   }
   let target = found[0];
@@ -33,7 +33,7 @@ function registerDecisionNavigation(context, index) {
     vscode.languages.registerDocumentLinkProvider(BPMN, {
       provideDocumentLinks(doc) {
         return referenceKeys(doc.getText())
-          .filter((r) => !index.ready || index.find(r.key).length) // while scanning, link everything: the command explains
+          .filter((r) => !index.ready || index.find(r.key, doc.uri).length) // while scanning, link everything: the command explains
           .map((r) => {
             const link = new vscode.DocumentLink(range(doc, r), vscode.Uri.parse(`command:${COMMAND}?${encodeURIComponent(JSON.stringify([r.key]))}`));
             link.tooltip = `Open decision "${r.key}"`;
@@ -47,7 +47,7 @@ function registerDecisionNavigation(context, index) {
         const hit = referenceKeyAt(doc.getText(), doc.offsetAt(position));
         if (!hit) return null;
         const links = [];
-        for (const f of index.find(hit.key)) {
+        for (const f of index.find(hit.key, doc.uri)) {
           const target = await vscode.workspace.openTextDocument(f.uri);
           const at = new vscode.Range(target.positionAt(f.start), target.positionAt(f.start));
           links.push({ originSelectionRange: range(doc, hit), targetUri: f.uri, targetRange: at, targetSelectionRange: at });

@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const { decisionEntries, referenceKeys } = require('../core/dmnValidators.mjs');
+const { inScope, describeScope } = require('../core/decisionScope.mjs');
 
 const isDmn = (uri) => /\.dmn$/i.test(uri.path);
 const isBpmn = (uri) => /\.bpmn(20\.xml)?$/i.test(uri.path);
@@ -70,19 +71,45 @@ class DecisionIndex {
     this._changed.fire();
   }
 
-  // Every decision id of the workspace, or null while still unknown.
-  keys() {
-    return this.ready ? new Set([...this.files.values()].flat().map((d) => d.id)) : null;
+  // The scope setting that applies to a .bpmn file (see core/decisionScope.mjs).
+  scopeOf(bpmnUri) {
+    const config = vscode.workspace.getConfiguration('flowableModeler', bpmnUri);
+    return { scope: config.get('decisionScope', 'workspace'), path: config.get('decisionPath', '.'), ignoreCase: process.platform === 'win32' };
   }
 
-  // [{uri, start}] of the files that define this decision id.
-  find(id) {
-    return [...this.files].flatMap(([uri, list]) => list.filter((d) => d.id === id).map((d) => ({ uri: vscode.Uri.parse(uri), start: d.start })));
+  // Can the .bpmn file refer to decisions of this .dmn file? Without a .bpmn (null): everything.
+  // `scope` is the already read setting of the .bpmn file; pass it when checking many files, reading it is not free.
+  visible(bpmnUri, dmnUri, scope = bpmnUri && this.scopeOf(bpmnUri)) {
+    return !bpmnUri || inScope(scope, bpmnUri.path, dmnUri.path);
   }
 
-  // [{uri, taskId, taskName, taskStart}] of the DMN tasks that refer to this decision id.
-  usedBy(id) {
-    return [...this.usages].flatMap(([uri, list]) => list.filter((u) => u.key === id).map((u) => ({ uri: vscode.Uri.parse(uri), ...u })));
+  describeScope(bpmnUri) {
+    return describeScope(bpmnUri ? this.scopeOf(bpmnUri) : { scope: 'workspace' });
+  }
+
+  // The decision ids a .bpmn file can see (those of the .dmn files in its scope), or null while still unknown.
+  keys(bpmnUri) {
+    if (!this.ready) return null;
+    const scope = bpmnUri && this.scopeOf(bpmnUri);
+    return new Set([...this.files].filter(([uri]) => this.visible(bpmnUri, vscode.Uri.parse(uri), scope)).flatMap(([, list]) => list.map((d) => d.id)));
+  }
+
+  // [{uri, start}] of the .dmn files that define this decision id and are in the scope of the .bpmn file.
+  find(id, bpmnUri) {
+    const scope = bpmnUri && this.scopeOf(bpmnUri);
+    return [...this.files].flatMap(([uri, list]) => list.filter((d) => d.id === id).map((d) => ({ uri: vscode.Uri.parse(uri), start: d.start })))
+      .filter((f) => this.visible(bpmnUri, f.uri, scope));
+  }
+
+  // [{uri, taskId, taskName, taskStart}] of the DMN tasks that refer to this decision id, in the .bpmn files that can see `dmnUri`.
+  usedBy(id, dmnUri) {
+    const scopes = new Map(); // one read of the setting per .bpmn file, however many tasks it has
+    return [...this.usages].flatMap(([uri, list]) => list.filter((u) => u.key === id).map((u) => ({ uri: vscode.Uri.parse(uri), ...u })))
+      .filter((u) => {
+        const key = u.uri.toString();
+        if (!scopes.has(key)) scopes.set(key, this.scopeOf(u.uri));
+        return this.visible(u.uri, dmnUri, scopes.get(key));
+      });
   }
 }
 

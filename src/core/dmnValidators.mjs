@@ -175,7 +175,7 @@ export function registerDmnValidators(registerValidator) {
       if (!literal) return [];
       const key = bodyOf(literal).trim();
       if (!key || /[$#]\{/.test(key) || keys.has(key)) return [];
-      return [{ message: `No decision with id "${key}" was found in the .dmn files of this workspace`, start: literal.start, end: literal.openEnd }];
+      return [{ message: `No decision with id "${key}" was found in the .dmn files ${ctx.config.dmnScope ?? 'of this workspace'}`, start: literal.start, end: literal.openEnd }];
     },
   });
 }

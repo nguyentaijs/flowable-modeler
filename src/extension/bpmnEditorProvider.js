@@ -17,9 +17,9 @@ class BpmnEditorProvider extends XmlEditorProvider {
   }
 
   // "Open decision" in the properties panel of a DMN task
-  onWebviewMessage(msg) {
+  onWebviewMessage(msg, document) {
     if (msg.type !== 'openDecision') return false;
-    openDecision(this.index, msg.key);
+    openDecision(this.index, msg.key, document.uri);
     return true;
   }
 }

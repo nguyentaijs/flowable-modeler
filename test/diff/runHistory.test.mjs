@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   selectSql, inList, createDb, fetchRun, listRoots, parseTs, decodeVar, attachJsonTwins, parseDmnExecution, instanceOverlay,
-  statusOf, bpmnFlows, bpmnProcessIds, clientCommand, extractStrings, RunError,
+  statusOf, bpmnFlows, bpmnProcessIds, clientCommand, splitCommand, extractStrings, RunError,
 } from '../../src/core/runHistory.mjs';
 
 const T = (s) => `2024-05-01 10:00:${s}`;
@@ -189,4 +189,22 @@ test('client command: mysql default, postgres, custom command; password redacted
   assert.deepEqual(pg.argv, ['docker', 'exec', '-i', 'db', 'psql', '-U', 'u', '-d', 'd', '-v', 'ON_ERROR_STOP=1', '-At']);
   assert.deepEqual(clientCommand({ dbCommand: 'docker exec -i "my db" mysql -N' }).argv, ['docker', 'exec', '-i', 'my db', 'mysql', '-N']);
   assert.throws(() => clientCommand({ engine: 'mysql' }), /no database container/);
+});
+
+test('splitCommand: quotes group, quotes can be glued to text, \\" is a quote, other backslashes stay', () => {
+  const cases = [
+    ['docker exec -i db', ['docker', 'exec', '-i', 'db']],
+    ['  a   b  ', ['a', 'b']],
+    ['mysql -p"my pass" -N', ['mysql', '-pmy pass', '-N']],
+    ["sh -c 'select 1; select 2'", ['sh', '-c', 'select 1; select 2']],
+    ['say "he said \\"hi\\""', ['say', 'he said "hi"']],
+    ['"C:\\Program Files\\Docker\\docker.exe" ps', ['C:\\Program Files\\Docker\\docker.exe', 'ps']],
+    ["a '' b", ['a', '', 'b']],
+    ["it's", null], // unclosed
+    ['a "b', null],
+  ];
+  for (const [text, expected] of cases) {
+    if (expected === null) assert.throws(() => splitCommand(text), /unclosed/, text);
+    else assert.deepEqual(splitCommand(text), expected, text);
+  }
 });

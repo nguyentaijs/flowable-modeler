@@ -75,3 +75,10 @@ test('referenceKeys tell which DMN task holds each reference (for "used by")', (
   assert.deepEqual([refs[0].key, refs[0].taskId, refs[0].taskName], ['sampleTierAssignment', 'DmnTask_TierAssignment', 'Tier Assignment']);
   assert.ok(refs[0].taskStart < refs[0].start);
 });
+
+test('dmn-reference: the message says where the decision was looked for', () => {
+  const bpmn = '<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:flowable="http://flowable.org/bpmn"><process id="p"><serviceTask id="s" flowable:type="dmn"><extensionElements><flowable:field name="decisionTableReferenceKey"><flowable:string>missing</flowable:string></flowable:field></extensionElements></serviceTask></process></definitions>';
+  const run = (config) => msgs(bpmn, { config: { dmnDecisionKeys: new Set(['other']), ...config } }).filter((m) => /decision/.test(m));
+  assert.match(run({ dmnScope: 'in the same folder' })[0], /"missing" was found in the \.dmn files in the same folder$/);
+  assert.match(run({})[0], /\.dmn files of this workspace$/, 'without a scope text: as before');
+});

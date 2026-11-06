@@ -1,11 +1,12 @@
 import * as dmn from '../core/dmnModel.mjs';
+import { suggest, suggestOutput } from '../core/dmnSuggestions.mjs';
 import schema from '../../schema/flowable-dmn-7.2.0.json';
 
 const vscode = acquireVsCodeApi();
 const app = document.getElementById('app');
 const errorBox = document.getElementById('error');
 const TABLE = schema.decisionTable;
-const TYPES = ['string', 'number', 'boolean', 'date'];
+const TYPES = ['string', 'number', 'boolean', 'date', 'collection'];
 
 let doc = null;
 let timer;
@@ -22,11 +23,26 @@ const showError = (msg) => {
   errorBox.hidden = !msg;
 };
 
-// Every change is serialized once after a short pause; the host turns it into a minimal text diff.
+// Every change is serialized once after a short pause; the host turns it into a minimal text diff. A change still waiting
+// when the editor is closed or hidden is sent at once, so the last edit is never lost.
+let pending = false;
+function sendChanges() {
+  clearTimeout(timer);
+  pending = false;
+  vscode.postMessage({ type: 'changed', xml: dmn.serializeDmn(doc) });
+}
 function changed() {
   clearTimeout(timer);
-  timer = setTimeout(() => vscode.postMessage({ type: 'changed', xml: dmn.serializeDmn(doc) }), 150);
+  pending = true;
+  timer = setTimeout(sendChanges, 150);
 }
+const flushChanges = () => {
+  if (pending) sendChanges();
+};
+window.addEventListener('pagehide', flushChanges);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flushChanges();
+});
 
 // Edit that keeps the DOM focus (cell text): no rebuild, so Tab moves on to the next cell.
 const edit = (fn) => {
@@ -105,8 +121,8 @@ function dropTarget(node, kind, index, move) {
 function fillUsedBy(node) {
   const id = node.dataset.decision;
   const list = usedBy.byDecision[id] ?? [];
-  node.replaceChildren(el('span', { className: 'used-by-title', textContent: usedBy.ready ? `Used by (${list.length})` : 'Used by (scanning the workspace...)' }));
-  if (usedBy.ready && !list.length) node.append(el('span', { className: 'empty', textContent: ' not referenced by any DMN task in this workspace' }));
+  node.replaceChildren(el('span', { className: 'used-by-title', textContent: usedBy.ready ? `Used by (${list.length})` : 'Used by (scanning the workspace...)', title: usedBy.scope ? `BPMN files ${usedBy.scope} (setting flowableModeler.decisionScope)` : '' }));
+  if (usedBy.ready && !list.length) node.append(el('span', { className: 'empty', textContent: ` not referenced by any DMN task ${usedBy.scope ?? 'in this workspace'}` }));
   for (const u of list) {
     const link = el('a', { href: '#', textContent: `${u.file}  ›  ${u.task}`, title: 'Open this process' });
     link.addEventListener('click', (e) => {
@@ -123,11 +139,11 @@ function renderDecision(decision) {
   const usedByNode = el('div', { className: 'used-by' });
   usedByNode.dataset.decision = decision.getAttribute('id') ?? '';
   fillUsedBy(usedByNode);
-  box.append(
-    el('div', { className: 'decision-head' },
-      el('label', { textContent: 'Decision id' }), textInput(decision.getAttribute('id') ?? '', (v) => edit(() => dmn.setAttr(decision, 'id', v))),
-      el('label', { textContent: 'Name' }), textInput(decision.getAttribute('name') ?? '', (v) => edit(() => dmn.setAttr(decision, 'name', v)))),
-  );
+  // decision id, name, hit policy and aggregation share one line
+  const head = el('div', { className: 'decision-head' },
+    el('label', { textContent: 'Decision id' }), textInput(decision.getAttribute('id') ?? '', (v) => edit(() => dmn.setAttr(decision, 'id', v))),
+    el('label', { textContent: 'Name' }), textInput(decision.getAttribute('name') ?? '', (v) => edit(() => dmn.setAttr(decision, 'name', v))));
+  box.append(head);
   if (!table) {
     box.append(el('p', { className: 'empty', textContent: 'This decision has no decision table.' }));
     return box;
@@ -135,8 +151,7 @@ function renderDecision(decision) {
 
   const hit = TABLE.attributes.hitPolicy;
   const agg = TABLE.attributes.aggregation;
-  const head = el('div', { className: 'decision-head' },
-    el('label', { textContent: 'Hit policy' }),
+  head.append(el('label', { textContent: 'Hit policy' }),
     select(table.getAttribute('hitPolicy') ?? '', hit.values, (v) => restructure(() => {
       dmn.setAttr(table, 'hitPolicy', v);
       if (v !== agg.onlyWhen.hitPolicy) dmn.setAttr(table, 'aggregation', ''); // aggregation only exists for COLLECT
@@ -144,7 +159,6 @@ function renderDecision(decision) {
   if (table.getAttribute('hitPolicy') === agg.onlyWhen.hitPolicy) {
     head.append(el('label', { textContent: 'Aggregation' }), select(table.getAttribute('aggregation') ?? '', agg.values, (v) => edit(() => dmn.setAttr(table, 'aggregation', v)), '(none)'));
   }
-  box.append(head);
 
   const ins = dmn.inputs(table);
   const outs = dmn.outputs(table);
@@ -171,7 +185,7 @@ function renderDecision(decision) {
     th.append(el('div', { className: 'col-head' }, grip, textInput(input.getAttribute('label') ?? '', (v) => edit(() => dmn.setAttr(input, 'label', v)), { placeholder: 'label' }), removeColumn(() => restructure(() => dmn.removeInput(table, i)))));
     labels.append(th);
     values.append(valuesCell(input));
-    exprs.append(el('th', {}, el('div', { className: 'col-expr' }, select(ie.getAttribute('typeRef') ?? '', TYPES, (v) => edit(() => dmn.setAttr(ie, 'typeRef', v)), '(type)'), textInput(dmn.textOf(ie), (v) => edit(() => dmn.setInputExpression(doc, input, v)), { placeholder: 'variable or expression', className: 'mono' }))));
+    exprs.append(el('th', {}, el('div', { className: 'col-expr' }, select(ie.getAttribute('typeRef') ?? '', TYPES, (v) => restructure(() => dmn.setAttr(ie, 'typeRef', v)), '(type)'), textInput(dmn.textOf(ie), (v) => edit(() => dmn.setInputExpression(doc, input, v)), { placeholder: 'variable or expression', className: 'mono' }))));
   });
   if (!ins.length) for (const r of [labels, exprs, values]) r.append(el('th', { className: 'empty', textContent: '-' }));
   outs.forEach((out, i) => {
@@ -182,7 +196,7 @@ function renderDecision(decision) {
     th.append(el('div', { className: 'col-head' }, grip, textInput(out.getAttribute('label') ?? '', (v) => edit(() => dmn.setAttr(out, 'label', v)), { placeholder: 'label' }), removeColumn(() => restructure(() => dmn.removeOutput(table, i)))));
     labels.append(th);
     values.append(valuesCell(out));
-    exprs.append(el('th', {}, el('div', { className: 'col-expr' }, select(out.getAttribute('typeRef') ?? '', TYPES, (v) => edit(() => dmn.setAttr(out, 'typeRef', v)), '(type)'), textInput(out.getAttribute('name') ?? '', (v) => edit(() => dmn.setAttr(out, 'name', v)), { placeholder: 'result variable', className: 'mono' }))));
+    exprs.append(el('th', {}, el('div', { className: 'col-expr' }, select(out.getAttribute('typeRef') ?? '', TYPES, (v) => restructure(() => dmn.setAttr(out, 'typeRef', v)), '(type)'), textInput(out.getAttribute('name') ?? '', (v) => edit(() => dmn.setAttr(out, 'name', v)), { placeholder: 'result variable', className: 'mono' }))));
   });
   if (!outs.length) for (const r of [labels, exprs, values]) r.append(el('th', { className: 'empty', textContent: '-' }));
   grid.append(group, labels, exprs, values);
@@ -193,9 +207,16 @@ function renderDecision(decision) {
     const tr = el('tr', {}, el('td', { className: 'num' }, grip, String(r + 1), button('×', 'Remove rule', () => restructure(() => dmn.removeRule(table, r)), 'remove')));
     draggable(grip, 'rule', r);
     dropTarget(tr, 'rule', r, (from, to) => dmn.moveRule(table, from, to));
-    const cell = (entry) => el('td', {}, textInput(dmn.textOf(entry), (v) => edit(() => dmn.setEntryText(doc, entry, v)), { className: 'mono' }));
-    dmn.inputEntries(rule).forEach((entry) => tr.append(cell(entry)));
-    dmn.outputEntries(rule).forEach((entry) => tr.append(cell(entry)));
+    // an input cell holding the "-" wildcard is shown empty, with "-" as the placeholder
+    const cell = (entry, isInput, typeRef, expression) => {
+      const shown = () => (isInput && dmn.textOf(entry).trim() === '-' ? '' : dmn.textOf(entry));
+      const input = textInput(shown(), (v) => edit(() => dmn.setEntryText(doc, entry, v)), { className: 'mono', placeholder: isInput ? '-' : '' });
+      input.addEventListener('change', () => { input.value = shown(); });
+      attachSuggestions(input, isInput ? (text, caret) => suggest(typeRef, text, caret, expression()) : (text) => suggestOutput(typeRef, text));
+      return el('td', {}, input);
+    };
+    dmn.inputEntries(rule).forEach((entry, i) => tr.append(cell(entry, true, ins[i] ? dmn.inputExpressionOf(ins[i]).getAttribute('typeRef') : '', () => (ins[i] ? dmn.textOf(dmn.inputExpressionOf(ins[i])) : ''))));
+    dmn.outputEntries(rule).forEach((entry, i) => tr.append(cell(entry, false, outs[i]?.getAttribute('typeRef') ?? '')));
     tr.append(el('td', {}, textInput(dmn.ruleDescription(rule), (v) => edit(() => dmn.setRuleDescription(doc, rule, v)), { placeholder: 'description' })));
     grid.append(tr);
   });
@@ -207,6 +228,70 @@ function renderDecision(decision) {
     button('+ Input', 'Add an input column', () => restructure(() => dmn.addInput(doc, table))),
     button('+ Output', 'Add an output column', () => restructure(() => dmn.addOutput(doc, table)))));
   return box;
+}
+
+// ---- suggestions for input cells (by column type) ---------------------------------------------------------------------------
+// One popup shared by all cells: it opens when a cell gets focus, narrows as the text is typed, and inserts a template with the
+// caret (or the date) selected. Only the cell text changes; it is stored through the cell's normal 'change' handler.
+const popup = el('div', { className: 'suggest', role: 'listbox', hidden: true });
+document.body.append(popup);
+let popupFor = null; // { input, items, index }
+
+function closePopup() {
+  popup.hidden = true;
+  popupFor = null;
+}
+
+function pick(item) {
+  const { input } = popupFor;
+  closePopup();
+  input.value = item.text;
+  input.dispatchEvent(new Event('change')); // store it
+  input.focus();
+  input.setSelectionRange(item.from, item.to);
+}
+
+function showPopup(input, suggestions) {
+  const items = suggestions(input.value, input.selectionStart ?? input.value.length);
+  if (!items.length || document.activeElement !== input) return closePopup();
+  popupFor = { input, items, index: 0 };
+  popup.replaceChildren(...items.map((item, i) => {
+    const row = el('div', { className: 'suggest-item mono' + (i === 0 ? ' active' : ''), role: 'option', textContent: item.label });
+    row.addEventListener('mousedown', (e) => { e.preventDefault(); pick(item); }); // before the input loses focus
+    return row;
+  }));
+  const r = input.getBoundingClientRect();
+  Object.assign(popup.style, { left: r.left + window.scrollX + 'px', top: r.bottom + window.scrollY + 'px', minWidth: r.width + 'px' });
+  popup.hidden = false;
+}
+
+function moveActive(delta) {
+  const n = popupFor.items.length;
+  popupFor.index = (popupFor.index + delta + n) % n;
+  [...popup.children].forEach((c, i) => c.classList.toggle('active', i === popupFor.index));
+  popup.children[popupFor.index].scrollIntoView({ block: 'nearest' });
+}
+
+function attachSuggestions(input, suggestions) { // suggestions(text, caret) -> the items to offer
+  if (!suggestions('', 0).length) return; // a type without suggestions
+  const show = () => showPopup(input, suggestions);
+  input.addEventListener('focus', show);
+  input.addEventListener('input', show);
+  input.addEventListener('click', show); // the caret moved
+  input.addEventListener('keyup', (e) => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) show(); });
+  input.addEventListener('blur', closePopup);
+  input.addEventListener('keydown', (e) => {
+    if (!popupFor || popupFor.input !== input) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveActive(e.key === 'ArrowDown' ? 1 : -1);
+    } else if (e.key === 'Enter' || e.key === 'Tab') {
+      e.preventDefault();
+      pick(popupFor.items[popupFor.index]);
+    } else if (e.key === 'Escape') {
+      closePopup();
+    }
+  });
 }
 
 function render() {

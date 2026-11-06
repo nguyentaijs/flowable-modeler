@@ -116,8 +116,8 @@ function registerRunCommands(context, index, log) {
     return found;
   }
 
-  async function decisionXml(key) {
-    const hit = index.find(key)[0];
+  async function decisionXml(key, bpmnUri) {
+    const hit = index.find(key, bpmnUri)[0];
     if (!hit) return null;
     return Buffer.from(await vscode.workspace.fs.readFile(hit.uri)).toString('utf8');
   }
@@ -147,7 +147,7 @@ function registerRunCommands(context, index, log) {
       const noPage = {};
       for (const [act, childId] of Object.entries(inst.children)) if (!drawable.has(childId) && pages[childId]) noPage[act] = pages[childId].defKey;
       instances[inst.instanceId] = { ...base, bpmn: file.text, overlay: { ...overlay, calledNoPage: noPage } };
-      for (const d of inst.dmn) if (d.key && !(d.key in decisions)) decisions[d.key] = await decisionXml(d.key);
+      for (const d of inst.dmn) if (d.key && !(d.key in decisions)) decisions[d.key] = await decisionXml(d.key, file.uri);
     }
     const panel = new RunPanel(context, log);
     panel.open({ rootInstanceId: run.rootInstanceId, order: run.instances.map((i) => i.instanceId), instances, decisions });

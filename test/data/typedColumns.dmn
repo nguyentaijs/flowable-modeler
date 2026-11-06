@@ -1,0 +1,45 @@
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:flowable="http://flowable.org/dmn" id="definition_typedColumns" name="typedColumns" namespace="http://www.flowable.org/dmn">
+  <decision id="typedColumns" name="One column per type">
+    <decisionTable id="decisionTable_typedColumns" hitPolicy="COLLECT" aggregation="SUM">
+      <input label="s"><inputExpression id="ie_s" typeRef="string"><text>tier</text></inputExpression></input>
+      <input label="n"><inputExpression id="ie_n" typeRef="number"><text>orderTotal</text></inputExpression></input>
+      <input label="b"><inputExpression id="ie_b" typeRef="boolean"><text>vip</text></inputExpression></input>
+      <input label="d"><inputExpression id="ie_d" typeRef="date"><text>createdAt</text></inputExpression></input>
+      <input label="c"><inputExpression id="ie_c" typeRef="collection"><text>orderCount</text></inputExpression></input>
+      <input label="u"><inputExpression id="ie_u"><text>untyped</text></inputExpression></input>
+      <output id="oe_s" label="os" name="os" typeRef="string"></output>
+      <output id="oe_n" label="on" name="on" typeRef="number"></output>
+      <output id="oe_b" label="ob" name="ob" typeRef="boolean"></output>
+      <output id="oe_d" label="od" name="od" typeRef="date"></output>
+      <output id="oe_c" label="oc" name="oc" typeRef="collection"></output>
+      <rule>
+        <description>all cells empty</description>
+        <inputEntry id="i1_s"><text></text></inputEntry>
+        <inputEntry id="i1_n"><text></text></inputEntry>
+        <inputEntry id="i1_b"><text></text></inputEntry>
+        <inputEntry id="i1_d"><text></text></inputEntry>
+        <inputEntry id="i1_c"><text></text></inputEntry>
+        <inputEntry id="i1_u"><text></text></inputEntry>
+        <outputEntry id="o1_s"><text></text></outputEntry>
+        <outputEntry id="o1_n"><text></text></outputEntry>
+        <outputEntry id="o1_b"><text></text></outputEntry>
+        <outputEntry id="o1_d"><text></text></outputEntry>
+        <outputEntry id="o1_c"><text></text></outputEntry>
+      </rule>
+      <rule>
+        <description>cells with values</description>
+        <inputEntry id="i2_s"><text><![CDATA[== "A"]]></text></inputEntry>
+        <inputEntry id="i2_n"><text><![CDATA[-]]></text></inputEntry>
+        <inputEntry id="i2_b"><text><![CDATA[== true]]></text></inputEntry>
+        <inputEntry id="i2_d"><text><![CDATA[<= date:toDate('1900-01-01')]]></text></inputEntry>
+        <inputEntry id="i2_c"><text><![CDATA[${orderCount > 1}]]></text></inputEntry>
+        <inputEntry id="i2_u"><text><![CDATA[> 5]]></text></inputEntry>
+        <outputEntry id="o2_s"><text><![CDATA["x"]]></text></outputEntry>
+        <outputEntry id="o2_n"><text><![CDATA[1]]></text></outputEntry>
+        <outputEntry id="o2_b"><text><![CDATA[true]]></text></outputEntry>
+        <outputEntry id="o2_d"><text><![CDATA[date:toDate('2000-01-01')]]></text></outputEntry>
+        <outputEntry id="o2_c"><text><![CDATA[${x}]]></text></outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

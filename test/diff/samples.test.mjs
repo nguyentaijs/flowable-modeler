@@ -10,7 +10,7 @@ import { parseDmn, serializeDmn } from '../../src/core/dmnModel.mjs';
 
 // The dummy files in samples/ stand in for real Flowable Design exports: two processes and a decision table for every key they refer to.
 const DIR = new URL('../../samples/', import.meta.url);
-const files = fs.readdirSync(DIR).sort();
+const files = fs.readdirSync(DIR, { withFileTypes: true }).filter((e) => e.isFile()).map((e) => e.name).sort(); // not folders such as .vscode
 const read = (f) => fs.readFileSync(new URL(f, DIR), 'utf8');
 const bpmn = files.filter((f) => f.endsWith('.bpmn'));
 const dmn = files.filter((f) => f.endsWith('.dmn'));

@@ -40,3 +40,6 @@ desktop.ini
 
 # Reference material (not part of the extension)
 references/
+
+# Settings VS Code writes when samples/ is opened as a workspace (machine-specific paths)
+samples/.vscode/

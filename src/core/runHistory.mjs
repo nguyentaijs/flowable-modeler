@@ -387,11 +387,38 @@ export function bpmnProcessIds(text) {
 
 export const DEFAULTS = { engine: 'mysql', user: 'flowable', database: 'flowable', password: 'flowable', dockerPath: 'docker' };
 
+// Splits a command line into its arguments: white space separates, "double" or 'single' quotes group (and may be glued to other
+// text: a"b c"d is one argument), inside double quotes \" is a quote; every other backslash stays, so Windows paths work.
+// An unclosed quote is an error instead of a silently wrong command.
+export function splitCommand(text) {
+  const argv = [];
+  let current = null; // null: between arguments ("" is an argument too)
+  let quote = null;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (quote) {
+      if (c === quote) quote = null;
+      else if (quote === '"' && c === '\\' && text[i + 1] === '"') current += text[++i];
+      else current += c;
+    } else if (c === '"' || c === "'") {
+      quote = c;
+      current ??= '';
+    } else if (/\s/.test(c)) {
+      if (current !== null) argv.push(current);
+      current = null;
+    } else {
+      current = (current ?? '') + c;
+    }
+  }
+  if (quote) throw new RunError(`the database command has an unclosed ${quote} quote: ${text}`);
+  if (current !== null) argv.push(current);
+  return argv;
+}
+
 // argv (and extra environment) of the command that reads SQL on stdin and prints plain rows
 export function clientCommand({ engine, container, user, database, password, dockerPath, dbCommand }) {
   if (dbCommand && dbCommand.trim()) {
-    const argv = dbCommand.match(/"[^"]*"|'[^']*'|\S+/g).map((s) => s.replace(/^(["'])(.*)\1$/, '$2'));
-    return { argv, display: dbCommand };
+    return { argv: splitCommand(dbCommand), display: dbCommand };
   }
   if (!container) throw new RunError('no database container configured (run "Flowable: Configure Database Connection")');
   const base = [dockerPath || 'docker', 'exec', '-i'];

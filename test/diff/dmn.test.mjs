@@ -133,3 +133,15 @@ test('allowed values: edit, add and remove <inputValues> / <outputValues>', () =
   out = write(m2);
   assert.equal(out, m.src, 'removing the added ones and restoring the edited one gives the original bytes');
 });
+
+test('an emptied input cell is written as the CDATA wildcard, an emptied output cell stays empty', () => {
+  const { doc, table } = open(RICH);
+  const rule = dmn.rules(table)[0];
+  const [inEntry] = dmn.inputEntries(rule);
+  const [outEntry] = dmn.outputEntries(rule);
+  dmn.setEntryText(doc, inEntry, '');
+  dmn.setEntryText(doc, outEntry, '');
+  const xml = dmn.serializeDmn(doc);
+  assert.ok(xml.includes(`<inputEntry id="${inEntry.getAttribute('id')}">\n          <text><![CDATA[-]]></text>`));
+  assert.equal(dmn.textOf(outEntry), '');
+});

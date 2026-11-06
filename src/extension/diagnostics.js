@@ -22,7 +22,7 @@ function registerDiagnostics(context, index) {
     const config = vscode.workspace.getConfiguration('flowableModeler', doc.uri);
     const results = validate(doc.getText(), {
       disabled: config.get('disabledValidators', []),
-      config: { passThroughNamespaces: config.get('passThroughNamespaces', ['design']), dmnDecisionKeys: index.keys() },
+      config: { passThroughNamespaces: config.get('passThroughNamespaces', ['design']), dmnDecisionKeys: index.keys(isBpmn(doc) ? doc.uri : null), dmnScope: index.describeScope(doc.uri) },
     });
     collection.set(
       doc.uri,
@@ -61,6 +61,7 @@ function registerDiagnostics(context, index) {
       collection.delete(doc.uri);
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration('flowableModeler.decisionScope') || e.affectsConfiguration('flowableModeler.decisionPath')) index.notify(); // "Used by" of the open DMN editors
       if (e.affectsConfiguration('flowableModeler')) vscode.workspace.textDocuments.forEach(refresh);
     }),
   );

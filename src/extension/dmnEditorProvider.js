@@ -37,9 +37,9 @@ class DmnEditorProvider extends XmlEditorProvider {
   usagesFor(document) {
     const usages = {};
     for (const id of decisionKeys(document.getText())) {
-      usages[id] = this.index.usedBy(id).map((u) => ({ uri: u.uri.toString(), file: vscode.workspace.asRelativePath(u.uri), task: u.taskName || u.taskId }));
+      usages[id] = this.index.usedBy(id, document.uri).map((u) => ({ uri: u.uri.toString(), file: vscode.workspace.asRelativePath(u.uri), task: u.taskName || u.taskId }));
     }
-    return { ready: this.index.ready, byDecision: usages };
+    return { ready: this.index.ready, byDecision: usages, scope: this.index.describeScope(document.uri) };
   }
 }
 

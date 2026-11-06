@@ -63,7 +63,10 @@ function setText(doc, el, value, cdata) {
 }
 
 // Rule cells are expressions: written as CDATA, like the files Flowable exports.
+// DMN 1.3 (10.3.2.9, grammar rule 14/15): "-" is the unary test that matches any value. An emptied input cell is
+// therefore written as "-" (a wildcard); output cells may stay empty.
 export function setEntryText(doc, entry, value) {
+  if (value.trim() === '' && local(entry) === 'inputEntry') value = '-';
   setText(doc, entry, value, true);
 }
 

@@ -106,3 +106,9 @@ td.num .grip { display: inline; padding: 0 4px 0 0; }
 #author-link:hover {
   opacity: 1;
 }
+
+/* suggestions under a focused input cell */
+.suggest { position: absolute; z-index: 20; max-height: 220px; overflow-y: auto; background: var(--vscode-editorSuggestWidget-background, var(--vscode-editorWidget-background)); color: var(--vscode-editorSuggestWidget-foreground, inherit); border: 1px solid var(--vscode-editorSuggestWidget-border, var(--vscode-panel-border, #555)); box-shadow: 0 2px 8px rgba(0, 0, 0, .35); }
+.suggest[hidden] { display: none; }
+.suggest-item { padding: 3px 10px; cursor: pointer; white-space: nowrap; font-size: 12.5px; }
+.suggest-item:hover, .suggest-item.active { background: var(--vscode-editorSuggestWidget-selectedBackground, var(--vscode-list-activeSelectionBackground)); color: var(--vscode-editorSuggestWidget-selectedForeground, var(--vscode-list-activeSelectionForeground, inherit)); }

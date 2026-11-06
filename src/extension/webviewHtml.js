@@ -1,9 +1,10 @@
+const crypto = require('crypto');
 const vscode = require('vscode');
 
 // Page shell of a bundled webview: strict CSP (script by nonce only), stylesheet and script from dist/<name>.{css,js}.
 function webviewHtml(webview, dist, name, bodyHtml) {
   const uri = (f) => webview.asWebviewUri(vscode.Uri.joinPath(dist, f));
-  const nonce = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  const nonce = crypto.randomBytes(16).toString('base64');
   const csp = [
     "default-src 'none'",
     `script-src 'nonce-${nonce}'`,

@@ -2,7 +2,7 @@
   "name": "flowable-design-local",
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [
@@ -71,6 +71,28 @@
           ],
           "description": "XML namespace prefixes that are kept as-is and never reported (e.g. Flowable Design's \"design\")."
         },
+        "flowableModeler.decisionScope": {
+          "type": "string",
+          "enum": [
+            "workspace",
+            "sameFolder",
+            "path"
+          ],
+          "enumDescriptions": [
+            "A BPMN file refers to decisions in any .dmn file of the workspace (default).",
+            "A BPMN file refers to decisions in .dmn files of the same folder only. Use it when copies of a file or decision id exist in several folders.",
+            "A BPMN file refers to decisions in .dmn files in the folder set by decisionPath, and below it."
+          ],
+          "default": "workspace",
+          "scope": "resource",
+          "description": "Which .dmn files a .bpmn file may refer to: used by \"Used by\" in the DMN editor, the missing-decision warning and Open decision."
+        },
+        "flowableModeler.decisionPath": {
+          "type": "string",
+          "default": ".",
+          "scope": "resource",
+          "description": "Used when decisionScope is \"path\": the folder to search, relative to the .bpmn file's own folder (\".\" = the current folder, \"..\" = its parent, \"../dmn\") or an absolute path. Subfolders are included."
+        },
         "flowableModeler.run.engine": {
           "type": "string",
           "enum": [
@@ -83,17 +105,20 @@
         "flowableModeler.run.host": {
           "type": "string",
           "default": "",
-          "description": "Database host for a direct connection (no Docker). When set, the extension connects to host:port itself and ignores the container and Docker CLI settings. Empty: use the Docker container."
+          "description": "Database host for a direct connection (no Docker). When set, the extension connects to host:port itself and ignores the container and Docker CLI settings. Empty: use the Docker container. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
+          "scope": "machine"
         },
         "flowableModeler.run.port": {
           "type": "number",
           "default": 0,
-          "description": "Database port for a direct connection. 0: the engine's default (3306 for MySQL, 5432 for PostgreSQL)."
+          "description": "Database port for a direct connection. 0: the engine's default (3306 for MySQL, 5432 for PostgreSQL). Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
+          "scope": "machine"
         },
         "flowableModeler.run.container": {
           "type": "string",
           "default": "",
-          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered. Not used when a host is set."
+          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered. Not used when a host is set. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
+          "scope": "machine"
         },
         "flowableModeler.run.dbUser": {
           "type": "string",
@@ -108,12 +133,14 @@
         "flowableModeler.run.dockerPath": {
           "type": "string",
           "default": "docker",
-          "description": "Docker CLI to run."
+          "description": "Docker CLI to run. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
+          "scope": "machine"
         },
         "flowableModeler.run.dbCommand": {
           "type": "string",
           "default": "",
-          "description": "Full command that reads SQL on stdin and prints plain rows, e.g. \"docker exec -i db mysql -u flowable -pflowable -N -B -r flowable\". Overrides container, user and name."
+          "description": "Full command that reads SQL on stdin and prints plain rows, e.g. \"docker exec -i db mysql -u flowable -pflowable -N -B -r flowable\". Overrides container, user and name. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
+          "scope": "machine"
         },
         "flowableModeler.run.bpmnFolder": {
           "type": "string",
@@ -136,6 +163,10 @@
       {
         "command": "flowable.newDmn",
         "title": "Flowable: New DMN File"
+      },
+      {
+        "command": "flowable.configureDecisionScope",
+        "title": "Flowable: Configure Lookup Scope (Used By)"
       },
       {
         "command": "flowable.configureDatabase",
@@ -204,5 +235,12 @@
   "bugs": {
     "url": "https://github.com/nguyentaijs/flowable-modeler/issues"
   },
-  "homepage": "https://github.com/nguyentaijs/flowable-modeler#readme"
+  "homepage": "https://github.com/nguyentaijs/flowable-modeler#readme",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "The database settings (host, port, container, Docker CLI and command) are only read from your user settings, never from the workspace, so an untrusted workspace cannot start programs or receive the database password."
+    },
+    "virtualWorkspaces": false
+  }
 }
