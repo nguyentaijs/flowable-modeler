@@ -6,16 +6,35 @@
           <text>score</text>
         </inputExpression>
       </input>
+      <input label="test">
+        <inputExpression id="inputExpression_New_input" typeRef="collection">
+          <text>test</text>
+        </inputExpression>
+      </input>
       <output id="outputExpression_1" label="tier" name="tier" typeRef="string"></output>
       <rule>
         <description>Score 700 and above</description>
-        <inputEntry id="inputEntry_1_1"><text><![CDATA[>= 700]]></text></inputEntry>
-        <outputEntry id="outputEntry_1_1"><text><![CDATA["A"]]></text></outputEntry>
+        <inputEntry id="inputEntry_1_1">
+          <text><![CDATA[>= 700]]></text>
+        </inputEntry>
+        <inputEntry id="inputEntry_New_input">
+          <text><![CDATA[${test}]]></text>
+        </inputEntry>
+        <outputEntry id="outputEntry_1_1">
+          <text><![CDATA["A"]]></text>
+        </outputEntry>
       </rule>
       <rule>
         <description>Anything lower</description>
-        <inputEntry id="inputEntry_1_2"><text><![CDATA[-]]></text></inputEntry>
-        <outputEntry id="outputEntry_1_2"><text><![CDATA["B"]]></text></outputEntry>
+        <inputEntry id="inputEntry_1_2">
+          <text><![CDATA[-]]></text>
+        </inputEntry>
+        <inputEntry id="inputEntry_New_input_1">
+          <text><![CDATA[-]]></text>
+        </inputEntry>
+        <outputEntry id="outputEntry_1_2">
+          <text><![CDATA["B"]]></text>
+        </outputEntry>
       </rule>
     </decisionTable>
   </decision>
