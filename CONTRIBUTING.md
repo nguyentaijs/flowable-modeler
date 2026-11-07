@@ -15,11 +15,11 @@ Press **F5** to launch an Extension Development Host on the `samples/` folder. O
 | `npm run build` | Bundles the extension host and the three webviews (BPMN, DMN, run) with esbuild |
 | `npm run watch` | Same, rebuilding on change |
 | `npm test` | Runs all tests with Node's test runner |
-| `npm run package` | Builds and creates `flowable-design-<version>.vsix` |
+| `npm run package` | Builds and creates `flowable-studio-<version>.vsix` |
 | `node scripts/extract-flowable-schema.mjs` | Regenerates `schema/flowable-7.2.0.json` from the Flowable 7.2.0 sources on GitHub (needs network; `--cache <dir>` reuses downloads) |
 | `node scripts/extract-flowable-dmn-schema.mjs` | Regenerates `schema/flowable-dmn-7.2.0.json` the same way |
 
-Install a built package with `code --install-extension flowable-design-<version>.vsix` (or Extensions view → ... → Install from VSIX).
+Install a built package with `code --install-extension flowable-studio-<version>.vsix` (or Extensions view → ... → Install from VSIX).
 
 Publishing: `npx vsce login nguyentaijs`, then `npx vsce publish` (add `--pre-release` for a pre-release).
 
