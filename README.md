@@ -1,4 +1,4 @@
-# Flowable Design
+# Flowable Community Modeler
 
 Edit **Flowable Community 7.2.0** BPMN and DMN files visually in VS Code, and see how a real process run went on the diagram. Edits are written back as **only what you changed**, so git diffs stay small.
 

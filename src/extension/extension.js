@@ -16,7 +16,7 @@ function activate(context) {
   registerNewFileCommands(context);
   registerScopeCommand(context);
   registerEditorToggle(context);
-  const channel = vscode.window.createOutputChannel('Flowable Design');
+  const channel = vscode.window.createOutputChannel('Flowable Community Modeler');
   context.subscriptions.push(channel);
   registerRunCommands(context, index, (m) => channel.appendLine(`[${new Date().toISOString()}] ${m}`));
   const options = { webviewOptions: { retainContextWhenHidden: false }, supportsMultipleEditorsPerDocument: false };

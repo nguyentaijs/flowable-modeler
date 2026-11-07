@@ -1,6 +1,6 @@
 {
   "name": "flowable-community-studio",
-  "displayName": "Flowable Design",
+  "displayName": "Flowable Community Modeler",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
   "version": "1.0.0",
   "publisher": "nguyentaijs",
@@ -51,7 +51,7 @@
       }
     ],
     "configuration": {
-      "title": "Flowable Design",
+      "title": "Flowable Community Modeler",
       "properties": {
         "flowableModeler.disabledValidators": {
           "type": "array",
