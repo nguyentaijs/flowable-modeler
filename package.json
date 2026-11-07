@@ -1,13 +1,13 @@
 {
   "name": "flowable-design-local",
-  "displayName": "Flowable Design Local",
+  "displayName": "Flowable Design",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
   "version": "0.1.7",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [
     "Visualization",
-    "Programming Languages"
+    "Other"
   ],
   "keywords": [
     "flowable",
@@ -51,7 +51,7 @@
       }
     ],
     "configuration": {
-      "title": "Flowable Modeler",
+      "title": "Flowable Design",
       "properties": {
         "flowableModeler.disabledValidators": {
           "type": "array",

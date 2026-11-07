@@ -36,7 +36,7 @@
 
 ## 0.1.1
 - Run view: Java-serialized variables (Groovy maps and lists) are now decoded and shown as JSON instead of "cannot be decoded".
-- Run commands use the BPMN open in the visual editor; one shared "Flowable Modeler" output channel; the run panel keeps its state when hidden.
+- Run commands use the BPMN open in the visual editor; one shared "Flowable Design" output channel; the run panel keeps its state when hidden.
 - "Contact the author" link in the editors and README.
 
 ## 0.1.0

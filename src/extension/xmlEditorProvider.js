@@ -19,7 +19,7 @@ class XmlEditorProvider {
 
   constructor(context, log) {
     this.context = context;
-    this.log = log ?? vscode.window.createOutputChannel('Flowable Modeler');
+    this.log = log ?? vscode.window.createOutputChannel('Flowable Design');
     if (!log) context.subscriptions.push(this.log);
   }
 
@@ -66,7 +66,7 @@ class XmlEditorProvider {
 ${where}
 `);
           this.log.show(true);
-          throw new Error('patched text does not match the modeler output (see output channel "Flowable Modeler")');
+          throw new Error('patched text does not match the modeler output (see output channel "Flowable Design")');
         }
         const we = new vscode.WorkspaceEdit();
         for (const e of edits) {
@@ -82,7 +82,7 @@ ${where}
         applying = false;
         shownText = null;
         log('error: ' + err.stack);
-        vscode.window.showErrorMessage('Flowable modeler could not apply the change: ' + err.message);
+        vscode.window.showErrorMessage('Flowable Design could not apply the change: ' + err.message);
       }
     };
 
