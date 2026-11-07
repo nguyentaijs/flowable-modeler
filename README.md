@@ -15,7 +15,7 @@ Built for files exported by Flowable Design: it uses JUEL expressions (not FEEL)
 - **BPMN editor** for `*.bpmn` and `*.bpmn20.xml`: a diagram editor with a resizable, Flowable-aware properties panel (general, script, called process, sub process, multi-instance, fields, conditions and every Flowable attribute of the element). Palette entries for service task, script task, user task, call activity and DMN task.
 - **DMN editor** for `*.dmn`: a decision table grid with hit policy, aggregation, input and output columns, allowed values and rules. Add, remove and drag to reorder rules and columns. Cells are written as CDATA. Each decision shows a **Used by** list of the BPMN files that refer to it. A BPMN file sees every `.dmn` file of the workspace by default; set `flowableModeler.decisionScope` to `sameFolder`, or to `path` with `flowableModeler.decisionPath`, when identical copies exist in other folders (**Flowable: Configure Lookup Scope (Used By)**).
 - **New files**: **Flowable: New BPMN File** and **Flowable: New DMN File** create a file and open it. An empty `.bpmn` or `.dmn` file you create yourself is also filled with a starting model (one process with a start event, or one decision table), using only the essential Flowable namespaces and attributes.
-- **Diagnostics**: problems for BPMN and DMN files appear in the Problems panel as you type (see [Validators](#validators)).
+- **Diagnostics**: problems for BPMN and DMN files appear in the Problems panel as you type (see [Validators](#validators)). A click in the Problems panel opens the visual editor, which cannot show a text line, so both editors list the same problems in a bar at the bottom left (click it to expand); **Show in XML** next to a problem opens the XML at that line.
 - **Navigation**: **Open ↗** on a DMN task opens its decision. **Ctrl+Click** or **F12** on a `decisionTableReferenceKey` in the XML does the same. A reference that matches no decision in the workspace gets a warning.
 - **Run visualization**: draws the latest process run from your Flowable database on its diagram. It shows an instance tree (called processes included), executed, running, failed and skipped steps, loop counts and durations, the final variables, and for DMN tasks the inputs, the result and the matched rule rows. It only reads the history tables, over a direct connection or through `docker exec`, and never writes to the database.
 - **Minimal diffs**: the editor compares its output with the file element by element and applies only the differences as text edits. Comments, CDATA, ordering and `design:*` content you didn't touch stay exactly as they were. VS Code's undo, redo, save and git diff work as usual.
@@ -31,6 +31,7 @@ Open the Command Palette (Ctrl+Shift+P) and type "Flowable".
 | **Flowable: Set Database Password** | Stores the password in VS Code's secret storage; leave it empty to go back to the default `flowable` |
 | **Flowable: Visualize Latest Run** | Opens the newest process run. Also a button in the title bar of `.bpmn` editors |
 | **Flowable: Visualize a Run...** | Lists recent runs and opens the one you pick |
+| **Flowable: Open as XML Text** / **Open in Designer** | Switch the same file between the visual editor and its XML text. Also buttons in the editor title bar |
 
 ## Extension settings
 
@@ -66,6 +67,7 @@ Switch any of them off with `flowableModeler.disabledValidators`.
 | `juel-syntax` | BPMN | error | `${...}` expressions have balanced brackets, quotes and blocks |
 | `dmn-decision-table` | DMN | error / warning | Valid hit policy and aggregation, columns have expressions and names, every rule has one cell per column |
 | `dmn-entries` | DMN | warning | Balanced quotes in cells; a literal that is not in the column's allowed values |
+| `dmn-cell-types` | DMN | warning | A rule cell fits its column's `typeRef`: dates use `date:toDate(...)`, collections `${...}`, strings are quoted, numbers/booleans are not quoted, `<`/`>` only on numbers and dates; an unknown `typeRef` is reported |
 | `dmn-reference` | BPMN | warning | A DMN task's `decisionTableReferenceKey` matches a decision id in a workspace `.dmn` file |
 
 ## Contact

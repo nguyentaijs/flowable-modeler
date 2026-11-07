@@ -21,7 +21,10 @@ const BUILDERS = {
   collection: (expression) => [{ label: '${}', ...at('${' + expression + '}', 2, 2 + expression.length) }],
 };
 
-export const suggestionsFor = (typeRef, expression = '') => (BUILDERS[typeRef] ? BUILDERS[typeRef](expression.trim()) : []);
+// The column types the editor offers, and the validator knows how to check.
+export const COLUMN_TYPES = Object.keys(BUILDERS);
+
+export const suggestionsFor =(typeRef, expression = '') => (BUILDERS[typeRef] ? BUILDERS[typeRef](expression.trim()) : []);
 
 // The suggestions that still fit what is typed in the cell: an empty cell (or the "-" wildcard) shows all of them, otherwise
 // the typed text must be the start of a suggestion, so "!" leaves the != ones and a complete cell leaves none.

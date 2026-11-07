@@ -3,8 +3,10 @@ import { mountPanel } from './propertiesPanel.js';
 import flowablePalette from './flowablePalette.js';
 import flowableRenderer from './flowableRenderer.js';
 import { mountSplitter } from './splitter.js';
+import { mountProblems } from './problems.js';
 
 const vscode = acquireVsCodeApi();
+mountProblems(vscode);
 const errorBox = document.getElementById('error');
 
 const modeler = new BpmnModeler({ container: '#canvas', additionalModules: [flowablePalette, flowableRenderer] });

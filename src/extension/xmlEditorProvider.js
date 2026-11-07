@@ -3,6 +3,7 @@ const { diffXml } = require('../core/differ.mjs');
 const { parseXml, canon, rootElement, firstDifference } = require('../core/xml.mjs');
 const { applyEdits } = require('../core/differ.mjs');
 const { webviewHtml } = require('./webviewHtml.js');
+const { toProblemItems } = require('../core/problems.mjs');
 
 // Custom text editor whose webview edits an XML document. The document text stays the source of truth: the webview
 // sends the whole serialized XML after each change and the host writes only the diff (see core/differ.mjs).
@@ -94,11 +95,25 @@ ${where}
     });
     panel.onDidDispose(() => sub.dispose());
 
+    // The validators' diagnostics of this file, shown by the webview's problems bar (a click in the Problems panel opens this
+    // editor, which cannot show a text selection, so the bar lists them and links to the XML line).
+    const pushProblems = () => panel.webview.postMessage({ type: 'problems', items: toProblemItems(vscode.languages.getDiagnostics(document.uri)) });
+    const problemsSub = vscode.languages.onDidChangeDiagnostics((e) => {
+      if (e.uris.some((u) => u.toString() === document.uri.toString())) pushProblems();
+    });
+    panel.onDidDispose(() => problemsSub.dispose());
+
     panel.webview.onDidReceiveMessage((msg) => {
       if (this.onWebviewMessage?.(msg, document, panel)) return; // subclass-specific messages (return true when handled)
       if (msg.type === 'log') log('webview: ' + msg.text);
-      else if (msg.type === 'ready') send();
-      else if (msg.type === 'changed') queue = queue.then(() => onWebviewChanged(msg.xml));
+      else if (msg.type === 'ready') {
+        send();
+        pushProblems();
+      } else if (msg.type === 'changed') queue = queue.then(() => onWebviewChanged(msg.xml));
+      else if (msg.type === 'showText') {
+        const selection = new vscode.Range(msg.line, msg.character, msg.endLine, msg.endCharacter);
+        vscode.commands.executeCommand('vscode.openWith', document.uri, 'default', { selection });
+      }
     });
   }
 

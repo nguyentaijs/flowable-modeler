@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { validate } from '../../src/core/validators.mjs';
-import { decisionKeys, decisionEntries, referenceKeys, referenceKeyAt, splitValues } from '../../src/core/dmnValidators.mjs';
+import { decisionKeys, decisionEntries, referenceKeys, referenceKeyAt, splitValues, cellProblem } from '../../src/core/dmnValidators.mjs';
 
 const doc = (f) => fs.readFileSync(new URL('../../samples/' + f, import.meta.url), 'utf8');
 const DMN_FILES = ['sampleOfferConfigurations.dmn', 'sampleTierAssignment.dmn'];
@@ -81,4 +81,74 @@ test('dmn-reference: the message says where the decision was looked for', () => 
   const run = (config) => msgs(bpmn, { config: { dmnDecisionKeys: new Set(['other']), ...config } }).filter((m) => /decision/.test(m));
   assert.match(run({ dmnScope: 'in the same folder' })[0], /"missing" was found in the \.dmn files in the same folder$/);
   assert.match(run({})[0], /\.dmn files of this workspace$/, 'without a scope text: as before');
+});
+
+test('cellProblem: a cell must fit the column typeRef', () => {
+  const fits = (type, cell, isInput = true) => assert.equal(cellProblem(type, cell, isInput), '', `${type}: ${cell}`);
+  const bad = (type, cell, re, isInput = true) => assert.match(cellProblem(type, cell, isInput), re, `${type}: ${cell}`);
+  for (const type of ['string', 'number', 'boolean', 'date', 'collection']) {
+    fits(type, '');
+    fits(type, '   ');
+    fits(type, '-');
+    fits(type, '${x}');
+    bad(type, '${x', /Unterminated/);
+  }
+  fits('anything', '== 5');
+  fits('', '== 5');
+
+  fits('string', '== "A"');
+  fits('string', '"A"');
+  fits('string', '!= premium');
+  fits('string', '== ');
+  bad('string', '> "A"', /string column: ">" does not apply/);
+  bad('string', '== 5', /string column: expected a quoted text/);
+  bad('string', '== true', /string column/);
+  fits('string', '"5"');
+  bad('string', "== date:toDate('2020-01-01')", /string column/);
+
+  fits('number', '>= 10');
+  fits('number', '-3.5');
+  fits('number', '< limit');
+  fits('number', '100', false);
+  bad('number', '>= "10"', /number column: expected a number/);
+  bad('number', 'true', /number column/, false);
+  bad('number', '> date:now()', /number column/);
+
+  fits('boolean', '== true');
+  fits('boolean', 'false', false);
+  fits('boolean', '== isVip');
+  bad('boolean', '< true', /boolean column: "<" does not apply/);
+  bad('boolean', '== "true"', /boolean column: expected true or false/);
+  bad('boolean', '== 1', /boolean column/);
+
+  fits('date', ">= date:toDate('2020-01-01')");
+  fits('date', 'date:now()', false);
+  bad('date', '>= 2020-01-01', /date column: expected date:toDate/);
+  bad('date', '== "2020-01-01"', /date column/);
+  bad('date', '2020-01-01', /date column/, false);
+
+  fits('collection', '${items}');
+  fits('collection', '#{items}');
+  bad('collection', 'a, b', /collection column: expected a JUEL expression/);
+  bad('collection', '>= 700', /collection column/);
+  bad('collection', 'items', /collection column/, false);
+});
+
+test('dmn-cell-types: reports mismatching cells and unknown typeRef, as warnings', () => {
+  const t = (inType, inCell, outType = 'string', outCell = '"x"') =>
+    dmn(`hitPolicy="FIRST"><input><inputExpression typeRef="${inType}"><text>v</text></inputExpression></input><output name="o" typeRef="${outType}"/><rule><inputEntry><text><![CDATA[${inCell}]]></text></inputEntry><outputEntry><text><![CDATA[${outCell}]]></text></outputEntry></rule></decisionTable></decision></definitions>`);
+  const run = (text) => validate(text).filter((d) => d.validator === 'dmn-cell-types');
+  assert.deepEqual(run(t('date', ">= date:toDate('2020-01-01')")), []);
+  assert.deepEqual(run(t('collection', '${v}', 'number', '5')), []);
+  const dateBad = run(t('date', '>= 2020-01-01'));
+  assert.equal(dateBad.length, 1);
+  assert.equal(dateBad[0].severity, 'warning');
+  assert.match(dateBad[0].message, /date column/);
+  assert.match(run(t('collection', '>= 700'))[0].message, /collection column/);
+  assert.match(run(t('number', '1', 'boolean', '"yes"'))[0].message, /boolean column/);
+  const unknown = run(t('integer', '== "a"'));
+  assert.equal(unknown.length, 1, 'cells of an unknown type are not checked');
+  assert.match(unknown[0].message, /typeRef "integer" is not one of: string, number, boolean, date, collection/);
+  const untyped = dmn('hitPolicy="FIRST"><input><inputExpression><text>v</text></inputExpression></input><output name="o"/><rule><inputEntry><text>>= 5</text></inputEntry><outputEntry><text>1</text></outputEntry></rule></decisionTable></decision></definitions>');
+  assert.deepEqual(run(untyped), [], 'no typeRef: not checked');
 });

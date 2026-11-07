@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+- Problems bar in the BPMN and DMN editors: the file's diagnostics are listed at the bottom left, each with **Show in XML** that opens the text editor at that line (a click in the Problems panel always opens the visual editor, which cannot show a line). New title-bar buttons **Open as XML Text** and **Open in Designer** switch between the two editors.
+- New validator `dmn-cell-types`: a decision table cell must fit its column's `typeRef` (date cells use `date:toDate(...)`, collection cells `${...}` with valid syntax, strings are quoted, numbers and booleans are not, and `<`/`>` do not apply to text or true/false). An unknown `typeRef` is reported.
+- Fix: the port prompt of "Configure Database Connection" rejected every port (the regular expression lacked a backslash); it now accepts 1-65535.
+
 ## 0.1.6
 - Security: the database settings that start a program or choose the server (`run.host`, `run.port`, `run.container`, `run.dockerPath`, `run.dbCommand`) are machine settings and are no longer read from a workspace's `.vscode/settings.json`; the extension declares limited support for untrusted workspaces. Move them to your user settings if you had them in a workspace.
 - The webview nonce comes from a cryptographic random source.

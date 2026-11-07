@@ -7,6 +7,7 @@ const { registerDecisionNavigation } = require('./decisionNavigation.js');
 const { registerRunCommands } = require('./runCommands.js');
 const { registerNewFileCommands } = require('./newFileCommands.js');
 const { registerScopeCommand } = require('./scopeCommand.js');
+const { registerEditorToggle } = require('./editorToggle.js');
 
 function activate(context) {
   const index = new DecisionIndex(context);
@@ -14,6 +15,7 @@ function activate(context) {
   registerDecisionNavigation(context, index);
   registerNewFileCommands(context);
   registerScopeCommand(context);
+  registerEditorToggle(context);
   const channel = vscode.window.createOutputChannel('Flowable Modeler');
   context.subscriptions.push(channel);
   registerRunCommands(context, index, (m) => channel.appendLine(`[${new Date().toISOString()}] ${m}`));

@@ -1,0 +1,95 @@
+/* Problems bar shared by both designers (see problems.js). Bottom-left; "Contact the author" is bottom-right. */
+#problems {
+  position: fixed;
+  left: 8px;
+  bottom: 6px;
+  z-index: 11;
+  max-width: calc(100% - 180px);
+  font: 12px var(--vscode-font-family, sans-serif);
+  color: var(--vscode-foreground, #333);
+}
+
+#problems[hidden] {
+  display: none;
+}
+
+#problems .problems-pill {
+  display: block;
+  padding: 2px 10px;
+  border: 1px solid var(--vscode-panel-border, #888);
+  border-radius: 10px;
+  background: var(--vscode-editorWidget-background, #f3f3f3);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+#problems .problems-pill.error {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+
+#problems .problems-pill.warning {
+  color: var(--vscode-editorWarning-foreground, #cca700);
+}
+
+#problems .problems-pill.information {
+  color: var(--vscode-editorInfo-foreground, #3794ff);
+}
+
+#problems .problems-list {
+  margin: 0 0 4px;
+  padding: 2px 0;
+  max-height: 40vh;
+  overflow: auto;
+  list-style: none;
+  border: 1px solid var(--vscode-panel-border, #888);
+  border-radius: 4px;
+  background: var(--vscode-editorWidget-background, #f3f3f3);
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+}
+
+#problems li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 3px 10px;
+}
+
+#problems li:hover {
+  background: var(--vscode-list-hoverBackground, rgba(128, 128, 128, 0.15));
+}
+
+#problems li.error .problems-icon {
+  color: var(--vscode-errorForeground, #f14c4c);
+}
+
+#problems li.warning .problems-icon {
+  color: var(--vscode-editorWarning-foreground, #cca700);
+}
+
+#problems li.information .problems-icon,
+#problems li.hint .problems-icon {
+  color: var(--vscode-editorInfo-foreground, #3794ff);
+}
+
+#problems .problems-message {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+#problems .problems-where {
+  flex: none;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+#problems .problems-link {
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--vscode-textLink-foreground, #3794ff);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}

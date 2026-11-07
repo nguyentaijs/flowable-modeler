@@ -6,7 +6,7 @@ const { newDmn } = require('../core/templates.mjs');
 class DmnEditorProvider extends XmlEditorProvider {
   static viewType = 'flowable.dmnEditor';
   webviewName = 'dmn-webview';
-  bodyHtml = '<div id="error" hidden></div><div id="app"></div><a id="author-link" href="https://www.linkedin.com/in/nguyentaijs" title="Opens LinkedIn">Contact the author</a>';
+  bodyHtml = '<div id="error" hidden></div><div id="app"></div><a id="author-link" href="https://www.linkedin.com/in/nguyentaijs" title="Opens LinkedIn">Contact</a>';
 
   constructor(context, log, index) {
     super(context, log);

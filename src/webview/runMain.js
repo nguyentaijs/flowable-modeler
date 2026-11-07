@@ -85,7 +85,7 @@ function renderBanner(inst) {
   b.append(button('Variables', () => showVariables(inst)));
   if (inst.uri) b.append(button('Open model', () => vscode.postMessage({ type: 'openFile', uri: inst.uri })));
   b.append(el('span', { className: 'hint', textContent: 'flows are inferred from executed steps' }));
-  b.append(el('a', { id: 'author-link', href: 'https://www.linkedin.com/in/nguyentaijs', title: 'Opens LinkedIn', textContent: 'Contact the author' }));
+  b.append(el('a', { id: 'author-link', href: 'https://www.linkedin.com/in/nguyentaijs', title: 'Opens LinkedIn', textContent: 'Contact' }));
 }
 
 function button(text, onClick) {

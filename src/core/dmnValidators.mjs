@@ -5,6 +5,8 @@
 // scripts/extract-flowable-dmn-schema.mjs); nothing about the engine is typed in here.
 import dmnSchema from '../../schema/flowable-dmn-7.2.0.json' with { type: 'json' };
 import { parseXml, rootElement, elementChildren } from './xml.mjs';
+import { checkJuelSyntax } from './juel.mjs';
+import { COLUMN_TYPES } from './dmnSuggestions.mjs';
 
 const local = (name) => name.slice(name.indexOf(':') + 1);
 const kids = (el, name) => elementChildren(el).filter((c) => local(c.name) === name);
@@ -74,6 +76,50 @@ const literalOf = (cell) => {
 };
 
 const oddQuotes = (s) => (s.replace(/\\./g, '').match(/"/g) ?? []).length % 2 === 1;
+
+// ---- cell value vs. the column's typeRef --------------------------------------------------------------------
+// Lenient: only a clear mismatch is reported. A bare word is a variable reference in JUEL, so it fits every type
+// except date and collection, which the editor always writes as date:fn(...) and ${...}.
+const OPERATOR = /^(==|!=|<=|>=|<|>)?\s*([\s\S]*)$/;
+const QUOTED = /^(?:"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')$/;
+const NUMBER = /^-?\d+(?:\.\d+)?$/;
+const BOOLEAN = /^(?:true|false)$/;
+const DATE_CALL = /\bdate:\w+\(/;
+const EXPRESSION = /^[$#]\{/;
+const shown = (s) => (s.length > 40 ? `${s.slice(0, 37)}...` : s);
+
+// The problem with a rule cell for a column of the given typeRef, or '' when it fits (or cannot be judged: empty cell,
+// the "-" wildcard, an unknown typeRef). An input cell is "[operator] value"; an output cell is just a value.
+export function cellProblem(typeRef, text, isInput = true) {
+  const t = text.trim();
+  if (t === '' || t === '-' || !COLUMN_TYPES.includes(typeRef)) return '';
+  const got = `(got ${shown(t)})`;
+  if (typeRef === 'collection' && !EXPRESSION.test(t)) return `collection column: expected a JUEL expression like \${items} ${got}`;
+  const m = OPERATOR.exec(t);
+  const op = isInput ? m[1] : undefined;
+  const value = isInput ? m[2].trim() : t;
+  if (value === '') return ''; // the operator is typed, the value is not yet
+  if (EXPRESSION.test(value)) return checkJuelSyntax(value)[0]?.message ?? '';
+  const quoted = QUOTED.test(value);
+  const number = NUMBER.test(value);
+  const bool = BOOLEAN.test(value);
+  const date = DATE_CALL.test(value);
+  const relational = op !== undefined && !['==', '!='].includes(op);
+  switch (typeRef) {
+    case 'string':
+      if (relational) return `string column: "${op}" does not apply to text, use == or != ${got}`;
+      return !quoted && (number || bool || date) ? `string column: expected a quoted text like "value" ${got}` : '';
+    case 'number':
+      return quoted || bool || date ? `number column: expected a number ${got}` : '';
+    case 'boolean':
+      if (relational) return `boolean column: "${op}" does not apply to true/false, use == or != ${got}`;
+      return quoted || number || date ? `boolean column: expected true or false ${got}` : '';
+    case 'date':
+      return date ? '' : `date column: expected date:toDate('yyyy-MM-dd') ${got}`;
+    default:
+      return '';
+  }
+}
 
 // ---- registration -----------------------------------------------------------------------------------------
 
@@ -150,6 +196,38 @@ export function registerDmnValidators(registerValidator) {
             const literal = literalOf(value);
             if (list && literal !== null && !list.includes(literal)) out.push({ message: `"${literal}" is not in this column's allowed values (${list.join(', ')})`, ...tag(t ?? cell) });
           });
+        }
+      }
+      return out;
+    },
+  });
+
+  registerValidator({
+    name: 'dmn-cell-types',
+    description: "Rule cells must fit the column's typeRef: date: for dates, ${...} for collections, quoted text, numbers, true/false",
+    kind: 'dmn',
+    severity: 'warning',
+    checkDocument: (ctx) => {
+      const out = [];
+      for (const decision of kids(ctx.root, 'decision')) {
+        const table = kid(decision, 'decisionTable');
+        if (!table) continue;
+        const inputs = kids(table, 'input').map((i) => kid(i, 'inputExpression'));
+        const outputs = kids(table, 'output');
+        for (const col of [...inputs, ...outputs]) {
+          const t = col && attr(col, 'typeRef');
+          if (t?.value && !COLUMN_TYPES.includes(t.value)) out.push({ message: `typeRef "${t.value}" is not one of: ${COLUMN_TYPES.join(', ')}`, ...attrRange(t) });
+        }
+        const check = (rule, entryName, columns, isInput) => kids(rule, entryName).forEach((cell, i) => {
+          const type = columns[i] && attr(columns[i], 'typeRef')?.value;
+          if (!type) return;
+          const t = kid(cell, 'text');
+          const message = cellProblem(type, bodyOf(t), isInput);
+          if (message) out.push({ message, ...tag(t ?? cell) });
+        });
+        for (const rule of kids(table, 'rule')) {
+          check(rule, 'inputEntry', inputs, true);
+          check(rule, 'outputEntry', outputs, false);
         }
       }
       return out;

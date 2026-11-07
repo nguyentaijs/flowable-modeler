@@ -63,7 +63,7 @@ function registerRunCommands(context, index, log) {
     if (how.direct) {
       host = await vscode.window.showInputBox({ prompt: 'Database host', value: config.get('host') || 'localhost', title, ignoreFocusOut: true });
       if (!host) return;
-      const text = await vscode.window.showInputBox({ prompt: 'Database port', value: String(config.get('port') || (engine === 'postgres' ? 5432 : 3306)), title, ignoreFocusOut: true, validateInput: (v) => (/^d{1,5}$/.test(v) ? null : 'A port number') });
+      const text = await vscode.window.showInputBox({ prompt: 'Database port', value: String(config.get('port') || (engine === 'postgres' ? 5432 : 3306)), title, ignoreFocusOut: true, validateInput: (v) => (/^\d{1,5}$/.test(v.trim()) && Number(v) >= 1 && Number(v) <= 65535 ? null : 'A port number between 1 and 65535') });
       if (text === undefined) return;
       port = Number(text);
     } else {

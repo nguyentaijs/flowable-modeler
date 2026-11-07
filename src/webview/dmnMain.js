@@ -1,12 +1,13 @@
 import * as dmn from '../core/dmnModel.mjs';
-import { suggest, suggestOutput } from '../core/dmnSuggestions.mjs';
+import { suggest, suggestOutput, COLUMN_TYPES as TYPES } from '../core/dmnSuggestions.mjs';
 import schema from '../../schema/flowable-dmn-7.2.0.json';
+import { mountProblems } from './problems.js';
 
 const vscode = acquireVsCodeApi();
+mountProblems(vscode);
 const app = document.getElementById('app');
 const errorBox = document.getElementById('error');
 const TABLE = schema.decisionTable;
-const TYPES = ['string', 'number', 'boolean', 'date', 'collection'];
 
 let doc = null;
 let timer;

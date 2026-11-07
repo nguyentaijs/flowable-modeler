@@ -2,7 +2,7 @@
   "name": "flowable-design-local",
   "displayName": "Flowable Design Local",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [
@@ -177,6 +177,16 @@
         "title": "Flowable: Set Database Password"
       },
       {
+        "command": "flowable.openAsText",
+        "title": "Flowable: Open as XML Text",
+        "icon": "$(code)"
+      },
+      {
+        "command": "flowable.openInDesigner",
+        "title": "Flowable: Open in Designer",
+        "icon": "$(symbol-structure)"
+      },
+      {
         "command": "flowable.visualizeLatestRun",
         "title": "Flowable: Visualize Latest Run",
         "icon": "$(play-circle)"
@@ -200,6 +210,16 @@
         }
       ],
       "editor/title": [
+        {
+          "command": "flowable.openAsText",
+          "when": "activeCustomEditorId == 'flowable.bpmnEditor' || activeCustomEditorId == 'flowable.dmnEditor'",
+          "group": "navigation"
+        },
+        {
+          "command": "flowable.openInDesigner",
+          "when": "resourceFilename =~ /\\.(dmn|bpmn(20\\.xml)?)$/ && activeCustomEditorId == ''",
+          "group": "navigation"
+        },
         {
           "command": "flowable.visualizeLatestRun",
           "when": "resourceFilename =~ /\\.bpmn(20\\.xml)?$/",

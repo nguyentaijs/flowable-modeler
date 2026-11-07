@@ -1,3 +1,4 @@
+@import './problems.css';
 body { margin: 0; background: var(--vscode-editor-background); color: var(--vscode-foreground); font: 13px var(--vscode-font-family, sans-serif); }
 #error { padding: 8px 12px; background: var(--vscode-inputValidation-errorBackground); color: var(--vscode-errorForeground); }
 #app { padding: 16px 20px; }
