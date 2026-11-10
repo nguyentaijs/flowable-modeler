@@ -2,7 +2,7 @@
   "name": "flowable-community-studio",
   "displayName": "Flowable Community Modeler",
   "description": "Visual BPMN and DMN editor for Flowable 7.2.0 community, with run visualization, writing minimal diffs back to the XML.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "nguyentaijs",
   "license": "MIT",
   "categories": [

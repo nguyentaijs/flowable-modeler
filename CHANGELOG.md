@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1
 - Fix: the database settings `run.host`, `run.port`, `run.container`, `run.dockerPath` and `run.dbCommand` were machine settings since 0.1.6, so a value in a workspace's `.vscode/settings.json` was silently ignored and the connection fell back to the detected container with the default user and password. They are normal settings again; only an untrusted workspace is blocked from setting them (`restrictedConfigurations`), a trusted one works as before.
 
 ## 1.0.0
