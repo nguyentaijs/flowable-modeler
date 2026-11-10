@@ -43,3 +43,6 @@ references/
 
 # Settings VS Code writes when samples/ is opened as a workspace (machine-specific paths)
 samples/.vscode/
+
+# Distributable packages are tracked
+!distribute/*.vsix
