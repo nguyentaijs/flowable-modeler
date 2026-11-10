@@ -6,9 +6,13 @@ import fs from 'node:fs';
 const pkg = JSON.parse(fs.readFileSync(new URL('../../package.json', import.meta.url), 'utf8'));
 const settings = pkg.contributes.configuration.properties;
 
-test('settings that start a program or choose where the database password goes are machine settings, so a workspace cannot set them', () => {
+test('settings that start a program or choose where the database password goes are ignored from an untrusted workspace, but not from a trusted one', () => {
+  const restricted = pkg.capabilities.untrustedWorkspaces.restrictedConfigurations;
   for (const name of ['host', 'port', 'container', 'dockerPath', 'dbCommand']) {
-    assert.equal(settings[`flowableModeler.run.${name}`]?.scope, 'machine', `run.${name}`);
+    const key = `flowableModeler.run.${name}`;
+    assert.ok(restricted.includes(key), key);
+    // machine scope would make VS Code ignore a trusted workspace's .vscode/settings.json too (the credentials "do not stick")
+    assert.notEqual(settings[key]?.scope, 'machine', key);
   }
 });
 

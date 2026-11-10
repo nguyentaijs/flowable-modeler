@@ -105,20 +105,17 @@
         "flowableModeler.run.host": {
           "type": "string",
           "default": "",
-          "description": "Database host for a direct connection (no Docker). When set, the extension connects to host:port itself and ignores the container and Docker CLI settings. Empty: use the Docker container. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
-          "scope": "machine"
+          "description": "Database host for a direct connection (no Docker). When set, the extension connects to host:port itself and ignores the container and Docker CLI settings. Empty: use the Docker container. Ignored from a workspace until you trust it (it can start programs and receives the database password)."
         },
         "flowableModeler.run.port": {
           "type": "number",
           "default": 0,
-          "description": "Database port for a direct connection. 0: the engine's default (3306 for MySQL, 5432 for PostgreSQL). Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
-          "scope": "machine"
+          "description": "Database port for a direct connection. 0: the engine's default (3306 for MySQL, 5432 for PostgreSQL). Ignored from a workspace until you trust it (it can start programs and receives the database password)."
         },
         "flowableModeler.run.container": {
           "type": "string",
           "default": "",
-          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered. Not used when a host is set. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
-          "scope": "machine"
+          "description": "Docker container running the Flowable database. Empty: the running database container is detected and remembered. Not used when a host is set. Ignored from a workspace until you trust it (it can start programs and receives the database password)."
         },
         "flowableModeler.run.dbUser": {
           "type": "string",
@@ -133,14 +130,12 @@
         "flowableModeler.run.dockerPath": {
           "type": "string",
           "default": "docker",
-          "description": "Docker CLI to run. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
-          "scope": "machine"
+          "description": "Docker CLI to run. Ignored from a workspace until you trust it (it can start programs and receives the database password)."
         },
         "flowableModeler.run.dbCommand": {
           "type": "string",
           "default": "",
-          "description": "Full command that reads SQL on stdin and prints plain rows, e.g. \"docker exec -i db mysql -u flowable -pflowable -N -B -r flowable\". Overrides container, user and name. Machine setting: a workspace cannot set it (it can start programs and receives the database password).",
-          "scope": "machine"
+          "description": "Full command that reads SQL on stdin and prints plain rows, e.g. \"docker exec -i db mysql -u flowable -pflowable -N -B -r flowable\". Overrides container, user and name. Ignored from a workspace until you trust it (it can start programs and receives the database password)."
         },
         "flowableModeler.run.bpmnFolder": {
           "type": "string",
@@ -259,7 +254,14 @@
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": "limited",
-      "description": "The database settings (host, port, container, Docker CLI and command) are only read from your user settings, never from the workspace, so an untrusted workspace cannot start programs or receive the database password."
+      "description": "The database settings (host, port, container, Docker CLI and command) are ignored when they come from an untrusted workspace, so it cannot start programs or receive the database password. Set them in your user settings, or trust the workspace.",
+      "restrictedConfigurations": [
+        "flowableModeler.run.host",
+        "flowableModeler.run.port",
+        "flowableModeler.run.container",
+        "flowableModeler.run.dockerPath",
+        "flowableModeler.run.dbCommand"
+      ]
     },
     "virtualWorkspaces": false
   }
